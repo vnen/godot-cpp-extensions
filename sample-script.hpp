@@ -28,6 +28,8 @@ public:
     int get_prop();
     void set_prop(int value);
 
+    int method_with_many_params(int par1, int par2, int par3, int par4);
+
 };
 
 #endif // ! SAMPLE_SCRIPT_H

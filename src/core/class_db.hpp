@@ -25,7 +25,11 @@ struct MethodDefinition {
 MethodDefinition D_METHOD(const char *p_name);
 MethodDefinition D_METHOD(const char *p_name, const char *p_arg1);
 template <typename ...Args>
-MethodDefinition D_METHOD(const char *p_name, const char *p_arg1, Args ...args);
+MethodDefinition D_METHOD(const char *p_name, const char *p_arg1, Args... args) {
+    MethodDefinition md = D_METHOD(p_name, args...);
+    md.args.push_front(p_arg1);
+    return md;
+}
 
 class ClassDB {
 public:

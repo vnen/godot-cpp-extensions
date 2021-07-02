@@ -19,13 +19,6 @@ MethodDefinition D_METHOD(const char *p_name, const char *p_arg1) {
     return method;
 }
 
-template <typename ...Args>
-MethodDefinition D_METHOD(const char *p_name, const char *p_arg1, Args... args) {
-    MethodDefinition md = D_METHOD(p_name, args...);
-    md.args.push_front(p_arg1);
-    return md;
-}
-
 void ClassDB::add_property(const char *p_class, const PropertyInfo &p_pinfo, const char *p_setter, const char *p_getter, int p_index) {
     ERR_FAIL_COND_MSG(classes.find(p_class) == classes.end(), "Trying to add property to non-existing class.");
 

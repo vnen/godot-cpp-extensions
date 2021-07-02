@@ -121,14 +121,15 @@ public:
     virtual void call(GDExtensionClassInstancePtr p_instance, const GDNativeVariantPtr *p_args, const GDNativeInt p_argument_count, GDNativeVariantPtr r_return, GDNativeCallError *r_error) const {
         // TODO
         std::cout << "Function " << get_name() << " is being called with variant." << std::endl;
-        T *self = reinterpret_cast<T *>(p_instance);
-        (self->*(method))();
+        r_error->error = NATIVE_CALL_ERROR_INVALID_METHOD;
+        // T *self = reinterpret_cast<T *>(p_instance);
+        // (self->*(method))();
+
     }
 	virtual void ptrcall(GDExtensionClassInstancePtr p_instance, const GDNativeTypePtr *p_args, GDNativeTypePtr r_ret) const {
         // TODO
         std::cout << "Function " << get_name() << " is being called with ptr." << std::endl;
-        T *self = reinterpret_cast<T *>(p_instance);
-        (self->*(method))();
+        call_with_ptr_args<T, P...>(reinterpret_cast<T *>(p_instance), method, p_args);
     }
 
     MethodBindT(void (T::*p_method)(P...)) {
@@ -181,14 +182,14 @@ public:
     virtual void call(GDExtensionClassInstancePtr p_instance, const GDNativeVariantPtr *p_args, const GDNativeInt p_argument_count, GDNativeVariantPtr r_return, GDNativeCallError *r_error) const {
         // TODO
         std::cout << "Function " << get_name() << " is being called with variant." << std::endl;
+        r_error->error = NATIVE_CALL_ERROR_INVALID_METHOD;
         // T *self = reinterpret_cast<T *>(p_instance);
         // (self->*(method))();
     }
 	virtual void ptrcall(GDExtensionClassInstancePtr p_instance, const GDNativeTypePtr *p_args, GDNativeTypePtr r_ret) const {
         // TODO
         std::cout << "Function " << get_name() << " is being called with ptr." << std::endl;
-        T *self = reinterpret_cast<T *>(p_instance);
-        call_with_ptr_args_ret<T, R, P...>(self, method, p_args, r_ret);
+        call_with_ptr_args_ret<T, R, P...>(reinterpret_cast<T *>(p_instance), method, p_args, r_ret);
     }
 
     MethodBindTR(R (T::*p_method)(P...)) {

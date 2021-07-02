@@ -17,11 +17,17 @@ private:
     godot::Button *button = nullptr;
     godot::Label *label = nullptr;
 
+    int prop = 0;
+
 public:
     void _ready();
     void on_button_down();
     void on_button_up();
     int get_x_from_vec(Vector2i vec);
+
+    int get_prop();
+    void set_prop(int value);
+
 };
 
 #endif // ! SAMPLE_SCRIPT_H

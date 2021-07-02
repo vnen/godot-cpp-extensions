@@ -14,6 +14,13 @@
 #define GDN_EXPORT
 #endif
 
+// Turn argument to string constant:
+// https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html#Stringizing
+#ifndef _STR
+#define _STR(m_x) #m_x
+#define _MKSTR(m_x) _STR(m_x)
+#endif
+
 // Should always inline no matter what.
 #ifndef _ALWAYS_INLINE_
 #if defined(__GNUC__)
@@ -47,6 +54,14 @@
 #undef Error
 #undef OK
 #undef CONNECT_DEFERRED // override from Windows SDK, clashes with Object enum
+#endif
+
+#if defined(__GNUC__)
+#define likely(x) __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
+#else
+#define likely(x) x
+#define unlikely(x) x
 #endif
 
 // Home-made index sequence trick, so it can be used everywhere without the costly include of std::tuple.

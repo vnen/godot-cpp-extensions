@@ -5,6 +5,7 @@
 
 #include "defs.hpp"
 #include "method_bind.hpp"
+#include "object.hpp"
 
 #include <list>
 #include <unordered_map>
@@ -15,20 +16,28 @@ namespace godot {
 
 struct MethodDefinition {
     const char *name = nullptr;
-	std::vector<std::string> args;
+	std::list<std::string> args;
 	MethodDefinition() {}
 	MethodDefinition(const char *p_name) :
 			name(p_name) {}
 };
 
-// TODO: Can this use variadic template?
 MethodDefinition D_METHOD(const char *p_name);
 MethodDefinition D_METHOD(const char *p_name, const char *p_arg1);
-MethodDefinition D_METHOD(const char *p_name, const char *p_arg1, const char *p_arg2);
-MethodDefinition D_METHOD(const char *p_name, const char *p_arg1, const char *p_arg2, const char *p_arg3);
+template <typename ...Args>
+MethodDefinition D_METHOD(const char *p_name, const char *p_arg1, Args ...args);
 
 class ClassDB {
 public:
+    struct PropertySetGet {
+		int index;
+		const char *setter;
+		const char *getter;
+		MethodBind *_setptr;
+		MethodBind *_getptr;
+		Variant::Type type;
+	};
+
     struct ClassInfo {
         const char *name = nullptr;
         const char *parent_name = nullptr;
@@ -37,42 +46,15 @@ public:
         std::list<MethodBind *> method_order;
         GDExtensionClassInstancePtr (*constructor)(void *data);
         void (*destructor)(void *data, GDExtensionClassInstancePtr ptr);
+        std::unordered_map<const char *, PropertySetGet> property_setget;
+        std::list<PropertyInfo> property_list;
+        ClassInfo *parent_ptr = nullptr;
     };
-
-    static MethodBind *bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const MethodDefinition &method_name, const void **p_defs, int p_defcount) {
-        const char *instance_type = p_bind->get_instance_class();
-        if (classes.find(instance_type) == classes.end()) {
-            // TODO: Error message: class doesn't exist.
-            memdelete(p_bind);
-            return nullptr;
-        }
-
-        ClassInfo &type = classes[instance_type];
-
-        if (type.method_map.find(method_name.name) != type.method_map.end()) {
-            // TODO: Error message: duplicate method bind.
-            memdelete(p_bind);
-            return nullptr;
-        }
-
-        p_bind->set_name(method_name.name);
-
-        if (method_name.args.size() > p_bind->get_argument_count()) {
-            // TODO: Error message: method definition has more arguments than the actual method.
-            memdelete(p_bind);
-            return nullptr;
-        }
-
-        p_bind->set_argument_names(method_name.args);
-
-        type.method_order.push_back(p_bind);
-        type.method_map[method_name.name] = p_bind;
-
-        return p_bind;
-    }
 
 private:
     static std::unordered_map<const char *, ClassInfo> classes;
+
+    static MethodBind *bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const MethodDefinition &method_name, const void **p_defs, int p_defcount);
 
 public:
     template<class T>
@@ -80,6 +62,9 @@ public:
 
     template<class N, class M>
     static MethodBind *bind_method(N p_method_name, M p_method);
+    static void add_property(const char *p_class, const PropertyInfo &p_pinfo, const char *p_setter, const char *p_getter, int p_index = -1);
+
+    static MethodBind *get_method(const char *p_class, const char *p_method);
 
     static void initialize(GDNativeInitializationLevel p_level);
     static void deinitialize(GDNativeInitializationLevel p_level);
@@ -94,6 +79,9 @@ void ClassDB::register_class(GDNativeInitializationLevel p_level) {
     cl.constructor = T::create;
     cl.destructor = T::free;
     classes[cl.name] = cl;
+    if (classes.find(cl.parent_name) != classes.end()) {
+        cl.parent_ptr = &classes[cl.parent_name];
+    }
     T::initialize_class();
 }
 

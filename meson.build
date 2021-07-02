@@ -6,6 +6,7 @@ include_path = include_directories('.', 'src')
 sources = [
     'src/godot.cpp',
     'src/core/class_db.cpp',
+    'src/core/error_macros.cpp',
     'src/core/memory.cpp',
     'src/core/method_bind.cpp',
     'src/core/object.cpp',
@@ -14,4 +15,8 @@ sources = [
     'sample-script.cpp',
 ]
 
-shared_library('sample_lib', sources, include_directories: include_path)
+defines = [
+    '-DDEBUG_ENABLED',
+]
+
+shared_library('sample_lib', sources, include_directories: include_path, cpp_args: defines)

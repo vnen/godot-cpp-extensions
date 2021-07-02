@@ -214,7 +214,7 @@ typedef struct {
 	GDNativeExtensionClassUnreference unreference_func;
 	GDNativeExtensionClassCreateInstance create_instance_func; /* this one is mandatory */
 	GDNativeExtensionClassFreeInstance free_instance_func; /* this one is mandatory */
-	GDNativeExtensionClassGetVirtual get_firtual_func;
+	GDNativeExtensionClassGetVirtual get_virtual_func;
 	void *class_userdata;
 } GDNativeExtensionClassCreationInfo;
 

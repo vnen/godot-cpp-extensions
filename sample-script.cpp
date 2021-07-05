@@ -26,8 +26,10 @@ void MyScene::_bind_methods() {
 }
 
 void MyScene::_ready() {
-    button = get_node<Button>("Button");
-    label = get_node<Label>("Label");
+    button = get_node<Button>(String("Button"));
+    label = get_node<Label>(String("Label"));
+
+    label->set_text("Ready was called!");
 
     // button->connect("button_down", callable_mp(this, &MyScene::on_button_down));
     // button->connect("button_up", callable_mp(this, &MyScene::on_button_up));

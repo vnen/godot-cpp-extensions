@@ -10,6 +10,8 @@ lib_sources = [
     'src/core/memory.cpp',
     'src/core/method_bind.cpp',
     'src/core/object.cpp',
+    'src/core/variant.cpp',
+    'src/gen/core_types.cpp',
     'src/gen/engine_classes.cpp',
 ]
 
@@ -22,5 +24,13 @@ defines = [
     '-DDEBUG_ENABLED',
 ]
 
-godot_cpp_lib = static_library('godot-cpp', sources: lib_sources, include_directories: include_path, cpp_args: defines)
-shared_library('sample_lib', user_sources, include_directories: include_path, cpp_args: defines, link_with: godot_cpp_lib)
+compiler_args = [
+    # '-fsanitize=address,pointer-subtract,pointer-compare',
+]
+
+linker_args = [
+    # '-fsanitize=address',
+]
+
+godot_cpp_lib = static_library('godot-cpp', sources: lib_sources, include_directories: include_path, cpp_args: defines + compiler_args, link_args: linker_args)
+shared_library('sample_lib', user_sources, include_directories: include_path, cpp_args: defines + compiler_args, link_args: linker_args, link_with: godot_cpp_lib)

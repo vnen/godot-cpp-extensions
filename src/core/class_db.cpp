@@ -130,6 +130,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
             nullptr, // GDNativeExtensionClassUnreference
             cl.constructor, // GDNativeExtensionClassCreateInstance create_instance_func; /* this one is mandatory */
             cl.destructor, // GDNativeExtensionClassFreeInstance free_instance_func; /* this one is mandatory */
+            cl.object_instance, // GDNativeExtensionClassObjectInstance object_instance_func; /* this one is mandatory */
             nullptr, // GDNativeExtensionClassGetVirtual get_virtual_func;
         };
 

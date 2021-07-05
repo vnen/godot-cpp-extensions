@@ -50,6 +50,7 @@ public:
         std::list<MethodBind *> method_order;
         GDExtensionClassInstancePtr (*constructor)(void *data);
         void (*destructor)(void *data, GDExtensionClassInstancePtr ptr);
+        void (*object_instance)(GDExtensionClassInstancePtr p_instance, GDNativeObjectPtr p_object_instance);
         std::unordered_map<const char *, PropertySetGet> property_setget;
         std::list<PropertyInfo> property_list;
         ClassInfo *parent_ptr = nullptr;
@@ -82,6 +83,7 @@ void ClassDB::register_class(GDNativeInitializationLevel p_level) {
     cl.level = p_level;
     cl.constructor = T::create;
     cl.destructor = T::free;
+    cl.object_instance = T::set_object_instance;
     classes[cl.name] = cl;
     if (classes.find(cl.parent_name) != classes.end()) {
         cl.parent_ptr = &classes[cl.parent_name];

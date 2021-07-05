@@ -1,6 +1,7 @@
 #include "godot.hpp"
 
 #include "core/class_db.hpp"
+#include "core/variant.hpp"
 
 namespace godot {
 
@@ -13,6 +14,8 @@ GDNativeBool GDNative::init(const GDNativeInterface *p_interface, const GDNative
 
     r_initialization->initialize = initialize_level;
     r_initialization->deinitialize = deinitialize_level;
+
+    Variant::init_bindings();
 
     return true;
 }

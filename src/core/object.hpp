@@ -6,44 +6,48 @@
 
 #include <godot-headers/gdnative_interface.h>
 
-#define GDCLASS(m_class, m_inherits)                                           \
-private:                                                                       \
-	friend class ClassDB;                                                      \
-                                                                               \
-protected:                                                                     \
-	static void (*_get_bind_methods())() {                                     \
-		return &m_class::_bind_methods;                                        \
-	}                                                                          \
-                                                                               \
-public:                                                                        \
-	static void initialize_class() {                                           \
-		static bool initialized = false;                                       \
-		if (initialized) {                                                     \
-			return;                                                            \
-		}                                                                      \
-		m_inherits::initialize_class();                                        \
-		if (m_class::_get_bind_methods() != m_inherits::_get_bind_methods()) { \
-			_bind_methods();                                                   \
-		}                                                                      \
-		initialized = true;                                                    \
-	}                                                                          \
-                                                                               \
-	static const char *get_class_static() {                                    \
-		return #m_class;                                                       \
-	}                                                                          \
-                                                                               \
-	static const char *get_parent_class_static() {                             \
-		return #m_inherits;                                                    \
-	}                                                                          \
-                                                                               \
-	static GDExtensionClassInstancePtr create(void *data) {                    \
-		return memnew(m_class);                                                \
-	}                                                                          \
-                                                                               \
-	static void free(void *data, GDExtensionClassInstancePtr ptr) {            \
-		memdelete(reinterpret_cast<m_class *>(ptr));                           \
-	}                                                                          \
-                                                                               \
+#define GDCLASS(m_class, m_inherits)                                                                               \
+private:                                                                                                           \
+	friend class ClassDB;                                                                                          \
+                                                                                                                   \
+protected:                                                                                                         \
+	static void (*_get_bind_methods())() {                                                                         \
+		return &m_class::_bind_methods;                                                                            \
+	}                                                                                                              \
+                                                                                                                   \
+public:                                                                                                            \
+	static void initialize_class() {                                                                               \
+		static bool initialized = false;                                                                           \
+		if (initialized) {                                                                                         \
+			return;                                                                                                \
+		}                                                                                                          \
+		m_inherits::initialize_class();                                                                            \
+		if (m_class::_get_bind_methods() != m_inherits::_get_bind_methods()) {                                     \
+			_bind_methods();                                                                                       \
+		}                                                                                                          \
+		initialized = true;                                                                                        \
+	}                                                                                                              \
+                                                                                                                   \
+	static const char *get_class_static() {                                                                        \
+		return #m_class;                                                                                           \
+	}                                                                                                              \
+                                                                                                                   \
+	static const char *get_parent_class_static() {                                                                 \
+		return #m_inherits;                                                                                        \
+	}                                                                                                              \
+                                                                                                                   \
+	static GDExtensionClassInstancePtr create(void *data) {                                                        \
+		return memnew(m_class);                                                                                    \
+	}                                                                                                              \
+                                                                                                                   \
+	static void free(void *data, GDExtensionClassInstancePtr ptr) {                                                \
+		memdelete(reinterpret_cast<m_class *>(ptr));                                                               \
+	}                                                                                                              \
+                                                                                                                   \
+	static void set_object_instance(GDExtensionClassInstancePtr p_instance, GDNativeObjectPtr p_object_instance) { \
+		reinterpret_cast<m_class *>(p_instance)->_owner = (godot::GodotObject *)p_object_instance;                 \
+	}                                                                                                              \
+                                                                                                                   \
 private:
 
 #define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, m_setter, m_getter)
@@ -82,17 +86,21 @@ struct PropertyInfo {
 	}
 };
 
+typedef void GodotObject;
+
 class Object {
 protected:
+	GodotObject *_owner = nullptr;
+
 	static void (*_get_bind_methods())() {
 		return &Object::_bind_methods;
 	}
 
 public:
-    static void initialize_class();
-    static void _bind_methods();
+	static void initialize_class();
+	static void _bind_methods();
 };
 
-}
+} // namespace godot
 
 #endif // ! GODOT_OBJECT_HPP

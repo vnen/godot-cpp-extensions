@@ -3,7 +3,15 @@
 
 #include "defs.hpp"
 
+#include <gen/core_types.hpp>
+
+namespace godot {
+
 class Variant {
+	friend class GDNative;
+
+	static void init_bindings();
+
 public:
 	enum Type {
 		NIL,
@@ -54,21 +62,6 @@ public:
 	};
 };
 
-class String {};
-class Array {};
-class Vector2 {};
-class Vector2i {
-public:
-    union {
-		int32_t x = 0;
-		int32_t width;
-	};
-	union {
-		int32_t y = 0;
-		int32_t height;
-	};
-};
-class Vector3 {};
-class Vector3i {};
+}
 
 #endif // ! GODOT_CPP_VARIANT_HPP

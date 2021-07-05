@@ -23,7 +23,7 @@ public:
     void _ready();
     void on_button_down();
     void on_button_up();
-    int get_x_from_vec(Vector2i vec);
+    int get_x_from_vec(godot::Vector2i vec);
 
     int get_prop();
     void set_prop(int value);

@@ -179,6 +179,10 @@ void ClassDB::deinitialize(GDNativeInitializationLevel p_level) {
         }
 
         interface->classdb_unregister_extension_class(library, cl.name);
+
+        for (MethodBind *method : cl.method_order) {
+            memdelete(method);
+        }
     }
 }
 

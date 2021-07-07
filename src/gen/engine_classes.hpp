@@ -32,6 +32,7 @@ class Node2D : public Node {
 class Label : Node2D {
 public:
     void set_text(const String &p_text);
+    String get_text() const;
 
     Label();
     Label(GodotObject *object);

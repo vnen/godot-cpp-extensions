@@ -34,6 +34,16 @@ void MyScene::_ready() {
     // button->connect("button_down", callable_mp(this, &MyScene::on_button_down));
     // button->connect("button_up", callable_mp(this, &MyScene::on_button_up));
     std::cout << "Ready called." << std::endl;
+
+    String txt = label->get_text();
+
+    int size = interface->string_to_utf8_chars(&txt, nullptr, 0);
+    char txt_str[size + 1];
+    interface->string_to_utf8_chars(&txt, txt_str, size + 1);
+    txt_str[size] = '\0';
+
+    std::cout << "Read text: " << txt_str << std::endl;
+
 }
 
 void MyScene::on_button_down() {

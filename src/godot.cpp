@@ -1,7 +1,7 @@
 #include "godot.hpp"
 
 #include "core/class_db.hpp"
-#include "core/variant.hpp"
+#include "variant/variant.hpp"
 
 namespace godot {
 

@@ -2,7 +2,7 @@
 #define GODOT_OBJECT_HPP
 
 #include "defs.hpp"
-#include "variant.hpp"
+#include "variant/variant.hpp"
 
 #include <godot-headers/gdnative_interface.h>
 

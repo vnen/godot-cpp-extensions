@@ -1,9 +1,7 @@
 #ifndef GODOT_CPP_VARIANT_HPP
 #define GODOT_CPP_VARIANT_HPP
 
-#include "defs.hpp"
-
-#include <gen/core_types.hpp>
+#include "core/defs.hpp"
 
 namespace godot {
 
@@ -60,6 +58,9 @@ public:
 
 		VARIANT_MAX
 	};
+
+	Variant() = default;
+	Variant(std::nullptr_t n) {}
 };
 
 }

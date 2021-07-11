@@ -1,7 +1,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#include <stddef.h>
+#include <cstddef>
 #include <cstdint>
 
 #include "memory.hpp"

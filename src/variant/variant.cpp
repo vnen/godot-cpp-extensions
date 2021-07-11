@@ -1,5 +1,8 @@
 #include "variant.hpp"
 
+#include <variant/string.hpp>
+#include <variant/node_path.hpp>
+
 namespace godot {
 
 void Variant::init_bindings() {

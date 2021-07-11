@@ -3,7 +3,7 @@
 #include <godot-headers/gdnative_interface.h>
 #include <src/core/defs.hpp>
 #include <src/core/object.hpp>
-#include <src/core/variant.hpp>
+#include <src/variant/variant.hpp>
 #include <src/godot.hpp>
 
 #include <iostream>
@@ -56,7 +56,7 @@ void MyScene::on_button_up() {
 }
 
 int MyScene::get_x_from_vec(Vector2i vec) {
-    return vec.x;
+    return vec.get_x();
 }
 
 int MyScene::get_prop() {

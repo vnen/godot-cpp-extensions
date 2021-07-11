@@ -3,8 +3,9 @@
 
 #include "defs.hpp"
 
-#include <gen/core_types.hpp>
-#include "variant.hpp"
+#include "variant/variant.hpp"
+
+#include "variant/builtin_types.hpp"
 
 namespace godot {
 

@@ -2,7 +2,7 @@
 #define GODOT_TYPE_INFO_HPP
 
 #include "object.hpp"
-#include "variant.hpp"
+#include "variant/variant.hpp"
 
 #include <godot-headers/gdnative_interface.h>
 

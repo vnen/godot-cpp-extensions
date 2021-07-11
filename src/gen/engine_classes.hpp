@@ -3,8 +3,8 @@
 
 // FIXME: Temporary. Putting all in on file because it's easier to handle.
 
-#include "core_types.hpp"
 #include "core/object.hpp"
+#include "variant/builtin_types.hpp"
 
 namespace godot {
 

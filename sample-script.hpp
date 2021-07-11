@@ -3,7 +3,7 @@
 
 #include <src/core/class_db.hpp>
 #include <src/core/object.hpp>
-#include <src/core/variant.hpp>
+#include <src/variant/variant.hpp>
 
 #include "src/gen/engine_classes.hpp"
 

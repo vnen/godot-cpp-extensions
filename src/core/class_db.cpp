@@ -3,6 +3,8 @@
 #include "error_macros.hpp"
 #include "godot.hpp"
 
+#include <core/memory.hpp>
+
 #include <algorithm>
 
 namespace godot {

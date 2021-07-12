@@ -4721,82 +4721,102 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
-					"name": "not"
+					"name": "not",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"constructors": [
@@ -4821,90 +4841,112 @@
 			"operators": [
 				{
 					"name": "and",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
-					"name": "not"
+					"name": "not",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "and",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"constructors": [
@@ -4946,232 +4988,290 @@
 			"is_keyed": true,
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "int"
 				},
 				{
-					"name": "unary+"
+					"name": "unary+",
+					"return_type": "int"
 				},
 				{
-					"name": "~"
-				},
-				{
-					"name": "and",
-					"right_type": "Nil"
-				},
-				{
-					"name": "or",
-					"right_type": "Nil"
-				},
-				{
-					"name": "xor",
-					"right_type": "Nil"
-				},
-				{
-					"name": "not"
+					"name": "~",
+					"return_type": "int"
 				},
 				{
 					"name": "and",
-					"right_type": "bool"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "bool"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "bool"
+					"right_type": "Nil",
+					"return_type": "bool"
+				},
+				{
+					"name": "not",
+					"return_type": "bool"
+				},
+				{
+					"name": "and",
+					"right_type": "bool",
+					"return_type": "bool"
+				},
+				{
+					"name": "or",
+					"right_type": "bool",
+					"return_type": "bool"
+				},
+				{
+					"name": "xor",
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "-",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "/",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "%",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "<<",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": ">>",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "&",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "|",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "^",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "int"
 				},
 				{
 					"name": "and",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "-",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "and",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "*",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "*",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "Color"
 				},
 				{
 					"name": "and",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedByteArray"
+					"right_type": "PackedByteArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedInt32Array"
+					"right_type": "PackedInt32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedInt64Array"
+					"right_type": "PackedInt64Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedFloat32Array"
+					"right_type": "PackedFloat32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedFloat64Array"
+					"right_type": "PackedFloat64Array",
+					"return_type": "bool"
 				}
 			],
 			"constructors": [
@@ -5213,205 +5313,256 @@
 			"is_keyed": true,
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "float"
 				},
 				{
-					"name": "unary+"
-				},
-				{
-					"name": "and",
-					"right_type": "Nil"
-				},
-				{
-					"name": "or",
-					"right_type": "Nil"
-				},
-				{
-					"name": "xor",
-					"right_type": "Nil"
-				},
-				{
-					"name": "not"
+					"name": "unary+",
+					"return_type": "float"
 				},
 				{
 					"name": "and",
-					"right_type": "bool"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "bool"
+					"right_type": "Nil",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "bool"
+					"right_type": "Nil",
+					"return_type": "bool"
+				},
+				{
+					"name": "not",
+					"return_type": "bool"
+				},
+				{
+					"name": "and",
+					"right_type": "bool",
+					"return_type": "bool"
+				},
+				{
+					"name": "or",
+					"right_type": "bool",
+					"return_type": "bool"
+				},
+				{
+					"name": "xor",
+					"right_type": "bool",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "float"
 				},
 				{
 					"name": "-",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "float"
 				},
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "float"
 				},
 				{
 					"name": "/",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "float"
 				},
 				{
 					"name": "and",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "-",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "float"
 				},
 				{
 					"name": "and",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "*",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "*",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "Color"
 				},
 				{
 					"name": "and",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "or",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "xor",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedByteArray"
+					"right_type": "PackedByteArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedInt32Array"
+					"right_type": "PackedInt32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedInt64Array"
+					"right_type": "PackedInt64Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedFloat32Array"
+					"right_type": "PackedFloat32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedFloat64Array"
+					"right_type": "PackedFloat64Array",
+					"return_type": "bool"
 				}
 			],
 			"constructors": [
@@ -5454,195 +5605,243 @@
 			"operators": [
 				{
 					"name": "%",
-					"right_type": "Nil"
+					"right_type": "Nil",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "bool"
+					"right_type": "bool",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "String"
 				},
 				{
 					"name": "==",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "String"
 				},
 				{
 					"name": "in",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "%",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Rect2"
+					"right_type": "Rect2",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Rect2i"
+					"right_type": "Rect2i",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Plane"
+					"right_type": "Plane",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "AABB"
+					"right_type": "AABB",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Basis"
+					"right_type": "Basis",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "String"
 				},
 				{
 					"name": "==",
-					"right_type": "StringName"
+					"right_type": "StringName",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "StringName"
+					"right_type": "StringName",
+					"return_type": "bool"
 				},
 				{
 					"name": "%",
-					"right_type": "StringName"
+					"right_type": "StringName",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "NodePath"
+					"right_type": "NodePath",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "String"
 				},
 				{
 					"name": "in",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "%",
-					"right_type": "Callable"
+					"right_type": "Callable",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Signal"
+					"right_type": "Signal",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "String"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "%",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "String"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedByteArray"
+					"right_type": "PackedByteArray",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedInt32Array"
+					"right_type": "PackedInt32Array",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedInt64Array"
+					"right_type": "PackedInt64Array",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedFloat32Array"
+					"right_type": "PackedFloat32Array",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedFloat64Array"
+					"right_type": "PackedFloat64Array",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedStringArray"
+					"right_type": "PackedStringArray",
+					"return_type": "String"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedStringArray"
+					"right_type": "PackedStringArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedVector2Array"
+					"right_type": "PackedVector2Array",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedVector3Array"
+					"right_type": "PackedVector3Array",
+					"return_type": "String"
 				},
 				{
 					"name": "%",
-					"right_type": "PackedColorArray"
+					"right_type": "PackedColorArray",
+					"return_type": "String"
 				}
 			],
 			"methods": [
@@ -6820,82 +7019,102 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Vector2"
 				},
 				{
-					"name": "unary+"
-				},
-				{
-					"name": "*",
-					"right_type": "int"
-				},
-				{
-					"name": "/",
-					"right_type": "int"
+					"name": "unary+",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "int",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "int",
+					"return_type": "Vector2"
+				},
+				{
+					"name": "*",
+					"right_type": "float",
+					"return_type": "Vector2"
+				},
+				{
+					"name": "/",
+					"right_type": "float",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "==",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "-",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "/",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "*",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedVector2Array"
+					"right_type": "PackedVector2Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -7429,82 +7648,102 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Vector2i"
 				},
 				{
-					"name": "unary+"
+					"name": "unary+",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "/",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "%",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "==",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "-",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "/",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "%",
-					"right_type": "Vector2i"
+					"right_type": "Vector2i",
+					"return_type": "Vector2i"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -7609,23 +7848,28 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "Rect2"
+					"right_type": "Rect2",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Rect2"
+					"right_type": "Rect2",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "Rect2"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -7894,19 +8138,23 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "Rect2i"
+					"right_type": "Rect2i",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Rect2i"
+					"right_type": "Rect2i",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -8218,90 +8466,112 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Vector3"
 				},
 				{
-					"name": "unary+"
-				},
-				{
-					"name": "*",
-					"right_type": "int"
-				},
-				{
-					"name": "/",
-					"right_type": "int"
+					"name": "unary+",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "int",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "int",
+					"return_type": "Vector3"
+				},
+				{
+					"name": "*",
+					"right_type": "float",
+					"return_type": "Vector3"
+				},
+				{
+					"name": "/",
+					"right_type": "float",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "==",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "-",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "/",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "Basis"
+					"right_type": "Basis",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedVector3Array"
+					"right_type": "PackedVector3Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -8888,82 +9158,102 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Vector3i"
 				},
 				{
-					"name": "unary+"
+					"name": "unary+",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "/",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "%",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "==",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "-",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "/",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "%",
-					"right_type": "Vector3i"
+					"right_type": "Vector3i",
+					"return_type": "Vector3i"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -9098,43 +9388,53 @@
 			"operators": [
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Transform2D"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Transform2D"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector2"
+					"right_type": "Vector2",
+					"return_type": "Vector2"
 				},
 				{
 					"name": "*",
-					"right_type": "Rect2"
+					"right_type": "Rect2",
+					"return_type": "Rect2"
 				},
 				{
 					"name": "==",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "Transform2D"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "PackedVector2Array"
+					"right_type": "PackedVector2Array",
+					"return_type": "PackedVector2Array"
 				}
 			],
 			"methods": [
@@ -9407,26 +9707,32 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Plane"
 				},
 				{
-					"name": "unary+"
+					"name": "unary+",
+					"return_type": "Plane"
 				},
 				{
 					"name": "==",
-					"right_type": "Plane"
+					"right_type": "Plane",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Plane"
+					"right_type": "Plane",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -9687,58 +9993,72 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Quaternion"
 				},
 				{
-					"name": "unary+"
+					"name": "unary+",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "/",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "==",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "-",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "*",
-					"right_type": "Quaternion"
+					"right_type": "Quaternion",
+					"return_type": "Quaternion"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -9996,23 +10316,28 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "AABB"
+					"right_type": "AABB",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "AABB"
+					"right_type": "AABB",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "AABB"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -10359,35 +10684,43 @@
 			"operators": [
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Basis"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Basis"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "==",
-					"right_type": "Basis"
+					"right_type": "Basis",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Basis"
+					"right_type": "Basis",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Basis"
+					"right_type": "Basis",
+					"return_type": "Basis"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -10664,43 +10997,53 @@
 			"operators": [
 				{
 					"name": "*",
-					"right_type": "int"
+					"right_type": "int",
+					"return_type": "Transform3D"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "float",
+					"return_type": "Transform3D"
 				},
 				{
 					"name": "*",
-					"right_type": "Vector3"
+					"right_type": "Vector3",
+					"return_type": "Vector3"
 				},
 				{
 					"name": "*",
-					"right_type": "AABB"
+					"right_type": "AABB",
+					"return_type": "AABB"
 				},
 				{
 					"name": "==",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "Transform3D"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "*",
-					"right_type": "PackedVector3Array"
+					"right_type": "PackedVector3Array",
+					"return_type": "PackedVector3Array"
 				}
 			],
 			"methods": [
@@ -11660,62 +12003,77 @@
 			],
 			"operators": [
 				{
-					"name": "unary-"
+					"name": "unary-",
+					"return_type": "Color"
 				},
 				{
-					"name": "unary+"
-				},
-				{
-					"name": "*",
-					"right_type": "int"
-				},
-				{
-					"name": "/",
-					"right_type": "int"
+					"name": "unary+",
+					"return_type": "Color"
 				},
 				{
 					"name": "*",
-					"right_type": "float"
+					"right_type": "int",
+					"return_type": "Color"
 				},
 				{
 					"name": "/",
-					"right_type": "float"
+					"right_type": "int",
+					"return_type": "Color"
+				},
+				{
+					"name": "*",
+					"right_type": "float",
+					"return_type": "Color"
+				},
+				{
+					"name": "/",
+					"right_type": "float",
+					"return_type": "Color"
 				},
 				{
 					"name": "==",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "Color"
 				},
 				{
 					"name": "-",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "Color"
 				},
 				{
 					"name": "*",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "Color"
 				},
 				{
 					"name": "/",
-					"right_type": "Color"
+					"right_type": "Color",
+					"return_type": "Color"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "PackedColorArray"
+					"right_type": "PackedColorArray",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -12118,31 +12476,38 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "String"
+					"right_type": "String",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "StringName"
+					"right_type": "StringName",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "StringName"
+					"right_type": "StringName",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Object"
+					"right_type": "Object",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"constructors": [
@@ -12176,19 +12541,23 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "NodePath"
+					"right_type": "NodePath",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "NodePath"
+					"right_type": "NodePath",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -12300,27 +12669,33 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "RID"
+					"right_type": "RID",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "RID"
+					"right_type": "RID",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "RID"
+					"right_type": "RID",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "RID"
+					"right_type": "RID",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "RID"
+					"right_type": "RID",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "RID"
+					"right_type": "RID",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -12355,19 +12730,23 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "Callable"
+					"right_type": "Callable",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Callable"
+					"right_type": "Callable",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -12528,19 +12907,23 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "Signal"
+					"right_type": "Signal",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Signal"
+					"right_type": "Signal",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -12679,19 +13062,23 @@
 			"operators": [
 				{
 					"name": "==",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -12842,39 +13229,48 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "<",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "<=",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": ">",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": ">=",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "Array"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				}
 			],
 			"methods": [
@@ -13430,23 +13826,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedByteArray"
+					"right_type": "PackedByteArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedByteArray"
+					"right_type": "PackedByteArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedByteArray"
+					"right_type": "PackedByteArray",
+					"return_type": "PackedByteArray"
 				}
 			],
 			"methods": [
@@ -14183,23 +14584,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedInt32Array"
+					"right_type": "PackedInt32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedInt32Array"
+					"right_type": "PackedInt32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedInt32Array"
+					"right_type": "PackedInt32Array",
+					"return_type": "PackedInt32Array"
 				}
 			],
 			"methods": [
@@ -14430,23 +14836,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedInt64Array"
+					"right_type": "PackedInt64Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedInt64Array"
+					"right_type": "PackedInt64Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedInt64Array"
+					"right_type": "PackedInt64Array",
+					"return_type": "PackedInt64Array"
 				}
 			],
 			"methods": [
@@ -14677,23 +15088,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedFloat32Array"
+					"right_type": "PackedFloat32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedFloat32Array"
+					"right_type": "PackedFloat32Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedFloat32Array"
+					"right_type": "PackedFloat32Array",
+					"return_type": "PackedFloat32Array"
 				}
 			],
 			"methods": [
@@ -14924,23 +15340,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedFloat64Array"
+					"right_type": "PackedFloat64Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedFloat64Array"
+					"right_type": "PackedFloat64Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedFloat64Array"
+					"right_type": "PackedFloat64Array",
+					"return_type": "PackedFloat64Array"
 				}
 			],
 			"methods": [
@@ -15171,23 +15592,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedStringArray"
+					"right_type": "PackedStringArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedStringArray"
+					"right_type": "PackedStringArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedStringArray"
+					"right_type": "PackedStringArray",
+					"return_type": "PackedStringArray"
 				}
 			],
 			"methods": [
@@ -15418,27 +15844,33 @@
 			"operators": [
 				{
 					"name": "*",
-					"right_type": "Transform2D"
+					"right_type": "Transform2D",
+					"return_type": "PackedVector2Array"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedVector2Array"
+					"right_type": "PackedVector2Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedVector2Array"
+					"right_type": "PackedVector2Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedVector2Array"
+					"right_type": "PackedVector2Array",
+					"return_type": "PackedVector2Array"
 				}
 			],
 			"methods": [
@@ -15669,27 +16101,33 @@
 			"operators": [
 				{
 					"name": "*",
-					"right_type": "Transform3D"
+					"right_type": "Transform3D",
+					"return_type": "PackedVector3Array"
 				},
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedVector3Array"
+					"right_type": "PackedVector3Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedVector3Array"
+					"right_type": "PackedVector3Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedVector3Array"
+					"right_type": "PackedVector3Array",
+					"return_type": "PackedVector3Array"
 				}
 			],
 			"methods": [
@@ -15920,23 +16358,28 @@
 			"operators": [
 				{
 					"name": "in",
-					"right_type": "Dictionary"
+					"right_type": "Dictionary",
+					"return_type": "bool"
 				},
 				{
 					"name": "in",
-					"right_type": "Array"
+					"right_type": "Array",
+					"return_type": "bool"
 				},
 				{
 					"name": "==",
-					"right_type": "PackedColorArray"
+					"right_type": "PackedColorArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "!=",
-					"right_type": "PackedColorArray"
+					"right_type": "PackedColorArray",
+					"return_type": "bool"
 				},
 				{
 					"name": "+",
-					"right_type": "PackedColorArray"
+					"right_type": "PackedColorArray",
+					"return_type": "PackedColorArray"
 				}
 			],
 			"methods": [

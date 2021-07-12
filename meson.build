@@ -13,6 +13,7 @@ lib_sources = [
     'src/variant/variant.cpp',
     # 'src/gen/core_types.cpp',
     'src/gen/engine_classes.cpp',
+    'src/variant/char_string.cpp',
 ]
 
 user_sources = [

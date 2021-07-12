@@ -4,8 +4,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "memory.hpp"
-
 #ifdef __GNUC__
 #define GDN_EXPORT __attribute__((visibility("default")))
 #elif defined(_WIN32)

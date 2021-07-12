@@ -1,6 +1,7 @@
 #include "engine_classes.hpp"
 
 #include "core/defs.hpp"
+#include "core/memory.hpp"
 #include "godot.hpp"
 
 #include <array>

@@ -122,7 +122,7 @@ def generate_builtin_bindings(api, build_config, output_dir):
         builtin_header.append("")
 
         for builtin in builtin_classes:
-            builtin_header.append(f"#include \"{camel_to_snake(builtin)}.hpp\"")
+            builtin_header.append(f'#include "{camel_to_snake(builtin)}.hpp"')
 
         builtin_header.append("")
 
@@ -146,6 +146,10 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
     # result.append('#include "builtin_types.hpp"')
     result.append('#include "core/defs.hpp"')
     result.append("")
+
+    # Special cases.
+    if class_name == "String":
+        result.append("#include <variant/char_string.hpp>")
 
     for include in fully_used_classes:
         result.append(
@@ -181,6 +185,9 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
             result.append(
                 f'\t\tGDNativePtrConstructor constructor_{constructor["index"]};'
             )
+
+    if builtin_api["has_destructor"]:
+        result.append("\t\tGDNativePtrDestructor destructor;")
 
     if "methods" in builtin_api:
         for method in builtin_api["methods"]:
@@ -237,6 +244,9 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
         result.append("\tString(const char16_t *from);")
         result.append("\tString(const char32_t *from);")
 
+    if builtin_api["has_destructor"]:
+        result.append(f"\t~{class_name}();")
+
     method_list = []
 
     if "methods" in builtin_api:
@@ -260,6 +270,14 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
 
             result.append(method_signature)
 
+    # Special cases.
+    if class_name == "String":
+        result.append("\tCharString utf8() const;")
+        result.append("\tCharString ascii() const;")
+        result.append("\tChar16String utf16() const;")
+        result.append("\tChar32String utf32() const;")
+        result.append("\tCharWideString wide_string() const;")
+
     if "members" in builtin_api:
         for member in builtin_api["members"]:
             if f'get_{member["name"]}' not in method_list:
@@ -268,8 +286,27 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                 )
             if f'set_{member["name"]}' not in method_list:
                 result.append(
-                    f'\tvoid set_{member["name"]}({"const " + correct_type(member["type"]) + " &" if not is_pod_type(member["type"]) else correct_type(member["type"]) + " "}value);'
+                    f'\tvoid set_{member["name"]}({type_for_parameter(member["type"])}value);'
                 )
+
+    if "operators" in builtin_api:
+        for operator in builtin_api["operators"]:
+            if operator["name"] not in ["in", "xor"]:
+                if "right_type" in operator:
+                    result.append(
+                        f'\t{operator["return_type"]} operator{operator["name"]}({type_for_parameter(operator["right_type"])}other) const;'
+                    )
+                else:
+                    result.append(
+                        f'\t{operator["return_type"]} operator{operator["name"].replace("unary", "")}() const;'
+                    )
+
+    # Special cases.
+    if class_name == "String":
+        result.append("\toperator const char *() const;")
+        result.append("\toperator const char16_t *() const;")
+        result.append("\toperator const char32_t *() const;")
+        result.append("\toperator const wchar_t *() const;")
 
     result.append("};")
 
@@ -319,6 +356,11 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                 f'\t_method_bindings.constructor_{constructor["index"]} = interface->variant_get_ptr_constructor({enum_type_name}, {constructor["index"]});'
             )
 
+    if builtin_api["has_destructor"]:
+        result.append(
+            f"\t_method_bindings.destructor = interface->variant_get_ptr_destructor({enum_type_name});"
+        )
+
     if "methods" in builtin_api:
         for method in builtin_api["methods"]:
             # TODO: Add error check for hash mismatch.
@@ -366,6 +408,7 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                 )
 
     result.append("}")
+    result.append("")
 
     if "constructors" in builtin_api:
         for constructor in builtin_api["constructors"]:
@@ -389,6 +432,13 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
 
             result.append(method_call)
             result.append("}")
+            result.append("")
+
+    if builtin_api["has_destructor"]:
+        result.append(f"{class_name}::~{class_name}() {{")
+        result.append("\t_method_bindings.destructor(&opaque);")
+        result.append("}")
+        result.append("")
 
     if "methods" in builtin_api:
         for method in builtin_api["methods"]:
@@ -428,8 +478,8 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
 
             result.append(method_call)
             result.append("}")
+            result.append("")
 
-    result.append("")
     result.append("} //namespace godot")
 
     return "\n".join(result)
@@ -448,18 +498,21 @@ def make_function_parameters(parameters, include_default=False):
     signature = []
 
     for par in parameters:
-        parameter = ""
-        if is_pod_type(par["type"]):
-            parameter += f'{correct_type(par["type"])} '
-        else:
-            parameter += f'const {correct_type(par["type"])} &'
-        parameter += f'{escape_identifier(par["name"])}'
+        parameter = type_for_parameter(par["type"])
+        parameter += escape_identifier(par["name"])
 
         if include_default and "default_value" in par:
             parameter += f' = {correct_default_value(par["default_value"])}'
         signature.append(parameter)
 
     return ", ".join(signature)
+
+
+def type_for_parameter(type_name):
+    if is_pod_type(type_name) and type_name != "Nil":
+        return f"{correct_type(type_name)} "
+    else:
+        return f"const {correct_type(type_name)} &"
 
 
 # Engine idiosyncrasies.
@@ -486,68 +539,74 @@ def is_included(type_name, current_type):
 
 
 def correct_default_value(value):
-    if value == "null":
-        return "nullptr"
-    elif value == '""':
-        return "String()"
-    if value == "[]":
-        return "Array()"
-    if value == "{}":
-        return "Dictionary()"
+    value_map = {
+        "null": "nullptr",
+        '""': "String()",
+        "[]": "Array()",
+        "{}": "Dictionary()",
+    }
+    if value in value_map:
+        return value_map[value]
     return value
 
 
-type_conversion = {"float": "double", "int": "int64_t"}
-
-
 def correct_type(type_name):
+    type_conversion = {"float": "double", "int": "int64_t", "Nil": "Variant"}
     if type_name in type_conversion:
         return type_conversion[type_name]
     return type_name
 
 
-cpp_keywords = [
-    "char",
-    "default",
-]
-
-
 def escape_identifier(id):
-    if id in cpp_keywords:
-        return "_" + id
+    cpp_keywords_map = {
+        "class": "_class",
+        "char": "_char",
+        "short": "_short",
+        "bool": "_bool",
+        "int": "_int",
+        "default": "_default",
+        "case": "_case",
+        "switch": "_switch",
+        "export": "_export",
+        "template": "_template",
+        "new": "new_",
+        "operator": "_operator",
+        "typeof": "type_of",
+        "typename": "type_name",
+    }
+    if id in cpp_keywords_map:
+        return cpp_keywords_map[id]
     return id
 
 
-op_id_map = {
-    "==": "equal",
-    "!=": "not_equal",
-    "<": "less",
-    "<=": "less_equal",
-    ">": "greater",
-    ">=": "greater_equal",
-    "+": "add",
-    "-": "subtract",
-    "*": "multiply",
-    "/": "divide",
-    "unary-": "negate",
-    "unary+": "positive",
-    "%": "module",
-    "<<": "shift_left",
-    ">>": "shift_right",
-    "&": "bit_and",
-    "|": "bit_or",
-    "^": "bit_xor",
-    "~": "bit_negate",
-    "and": "and",
-    "or": "or",
-    "xor": "xor",
-    "not": "not",
-    "and": "and",
-    "in": "in",
-}
-
-
 def get_operator_id_name(op):
+    op_id_map = {
+        "==": "equal",
+        "!=": "not_equal",
+        "<": "less",
+        "<=": "less_equal",
+        ">": "greater",
+        ">=": "greater_equal",
+        "+": "add",
+        "-": "subtract",
+        "*": "multiply",
+        "/": "divide",
+        "unary-": "negate",
+        "unary+": "positive",
+        "%": "module",
+        "<<": "shift_left",
+        ">>": "shift_right",
+        "&": "bit_and",
+        "|": "bit_or",
+        "^": "bit_xor",
+        "~": "bit_negate",
+        "and": "and",
+        "or": "or",
+        "xor": "xor",
+        "not": "not",
+        "and": "and",
+        "in": "in",
+    }
     return op_id_map[op]
 
 

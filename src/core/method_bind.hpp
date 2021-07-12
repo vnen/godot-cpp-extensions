@@ -4,6 +4,8 @@
 #include "binder_common.hpp"
 #include "type_info.hpp"
 
+#include <core/memory.hpp>
+
 #include <godot-headers/gdnative_interface.h>
 
 #include <string>

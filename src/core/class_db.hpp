@@ -4,6 +4,7 @@
 #include <godot-headers/gdnative_interface.h>
 
 #include "defs.hpp"
+#include "error_macros.hpp"
 #include "method_bind.hpp"
 #include "object.hpp"
 

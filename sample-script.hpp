@@ -2,6 +2,7 @@
 #define SAMPLE_SCRIPT_H
 
 #include <src/core/class_db.hpp>
+#include <src/core/memory.hpp>
 #include <src/core/object.hpp>
 #include <src/variant/variant.hpp>
 

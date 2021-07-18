@@ -37,9 +37,9 @@ void MyScene::_ready() {
 
     String txt = label->get_text();
 
-    int size = interface->string_to_utf8_chars(&txt, nullptr, 0);
+    int size = internal::interface->string_to_utf8_chars(&txt, nullptr, 0);
     char txt_str[size + 1];
-    interface->string_to_utf8_chars(&txt, txt_str, size + 1);
+    internal::interface->string_to_utf8_chars(&txt, txt_str, size + 1);
     txt_str[size] = '\0';
 
     std::cout << "Read text: " << txt_str << std::endl;

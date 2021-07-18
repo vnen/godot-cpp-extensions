@@ -8,6 +8,8 @@
 
 #include <godot-headers/gdnative_interface.h>
 
+#include <classes/global_constants.hpp>
+
 #include <string>
 #include <vector>
 
@@ -15,18 +17,6 @@
 
 namespace godot {
 
-enum MethodFlags {
-	METHOD_FLAG_NORMAL = 1,
-	METHOD_FLAG_EDITOR = 2,
-	METHOD_FLAG_NOSCRIPT = 4,
-	METHOD_FLAG_CONST = 8,
-	METHOD_FLAG_REVERSE = 16, // used for events
-	METHOD_FLAG_VIRTUAL = 32,
-	METHOD_FLAG_FROM_SCRIPT = 64,
-	METHOD_FLAG_VARARG = 128,
-	METHOD_FLAG_STATIC = 256,
-	METHOD_FLAGS_DEFAULT = METHOD_FLAG_NORMAL,
-};
 
 class MethodBind {
     const char *name = nullptr;

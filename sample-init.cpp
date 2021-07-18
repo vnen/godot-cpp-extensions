@@ -15,7 +15,7 @@ extern "C" {
 // Initialization.
 
 GDNativeBool GDN_EXPORT sample_script_init(const GDNativeInterface *p_interface, const GDNativeExtensionClassLibraryPtr p_library, GDNativeInitialization *r_initialization) {
-    GDNativeBool result = godot::GDNative::init(p_interface, p_library, r_initialization);
+    GDNativeBool result = godot::GDExtensionBinding::init(p_interface, p_library, r_initialization);
 
     register_classes();
 
@@ -23,11 +23,11 @@ GDNativeBool GDN_EXPORT sample_script_init(const GDNativeInterface *p_interface,
 }
 
 void GDN_EXPORT initialize_level(void *userdata, GDNativeInitializationLevel p_level) {
-    godot::GDNative::initialize_level(userdata, p_level);
+    godot::GDExtensionBinding::initialize_level(userdata, p_level);
 }
 
 void GDN_EXPORT deinitialize_level(void *userdata, GDNativeInitializationLevel p_level) {
-    godot::GDNative::deinitialize_level(userdata, p_level);
+    godot::GDExtensionBinding::deinitialize_level(userdata, p_level);
 }
 
 }

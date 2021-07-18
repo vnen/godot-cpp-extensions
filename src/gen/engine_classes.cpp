@@ -14,20 +14,20 @@ template <class T, class... Args>
 T _call_native_mb_ret(GDNativeMethodBindPtr mb, void *instance, Args... args) {
 	T ret;
 	std::array<void *, sizeof...(Args)> mb_args = { &args... };
-	interface->object_method_bind_ptrcall(mb, instance, mb_args.data(), &ret);
+	internal::interface->object_method_bind_ptrcall(mb, instance, mb_args.data(), &ret);
 	return ret;
 }
 
 template <class... Args>
 void _call_native_mb_no_ret(GDNativeMethodBindPtr mb, void *instance, Args... args) {
 	std::array<void *, sizeof...(Args)> mb_args = { &args... };
-	interface->object_method_bind_ptrcall(mb, instance, mb_args.data(), nullptr);
+	internal::interface->object_method_bind_ptrcall(mb, instance, mb_args.data(), nullptr);
 }
 
 }
 
 Node *Node::get_node_internal(const NodePath &p_path) {
-	static GDNativeMethodBindPtr mb = interface->classdb_get_method_bind("Node", "get_node", 135374120);
+	static GDNativeMethodBindPtr mb = internal::interface->classdb_get_method_bind("Node", "get_node", 135374120);
 	return memnew(Node(internal::_call_native_mb_ret<GodotObject *>(mb, _owner, p_path)));
 }
 
@@ -42,12 +42,12 @@ Node::Node(GodotObject *object) :
 Node::~Node() {}
 
 void Label::set_text(const String &p_text) {
-	static GDNativeMethodBindPtr mb = interface->classdb_get_method_bind("Label", "set_text", 134188166);
+	static GDNativeMethodBindPtr mb = internal::interface->classdb_get_method_bind("Label", "set_text", 134188166);
     internal::_call_native_mb_no_ret(mb, _owner, p_text);
 }
 
 String Label::get_text() const {
-	static GDNativeMethodBindPtr mb = interface->classdb_get_method_bind("Label", "get_text", 135338183);
+	static GDNativeMethodBindPtr mb = internal::interface->classdb_get_method_bind("Label", "get_text", 135338183);
     return internal::_call_native_mb_ret<String>(mb, _owner);
 }
 

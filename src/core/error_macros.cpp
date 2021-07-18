@@ -8,9 +8,9 @@ namespace godot {
 
 void _err_print_error(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_is_warning) {
     if (p_is_warning) {
-        interface->print_warning(p_message, p_function, p_file, p_line);
+        internal::interface->print_warning(p_message, p_function, p_file, p_line);
     } else {
-        interface->print_error(p_message, p_function, p_file, p_line);
+        internal::interface->print_error(p_message, p_function, p_file, p_line);
     }
 }
 

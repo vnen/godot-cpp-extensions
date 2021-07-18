@@ -4,6 +4,8 @@
 #include "defs.hpp"
 #include "variant/variant.hpp"
 
+#include <classes/object.hpp>
+
 #include <godot-headers/gdnative_interface.h>
 
 #define GDCLASS(m_class, m_inherits)                                                                               \
@@ -41,13 +43,33 @@ public:                                                                         
 	}                                                                                                              \
                                                                                                                    \
 	static void free(void *data, GDExtensionClassInstancePtr ptr) {                                                \
-		memdelete(reinterpret_cast<m_class *>(ptr));                                                               \
+		godot::memdelete(reinterpret_cast<m_class *>(ptr));                                                        \
 	}                                                                                                              \
                                                                                                                    \
 	static void set_object_instance(GDExtensionClassInstancePtr p_instance, GDNativeObjectPtr p_object_instance) { \
 		reinterpret_cast<m_class *>(p_instance)->_owner = (godot::GodotObject *)p_object_instance;                 \
 	}                                                                                                              \
                                                                                                                    \
+private:
+
+// Don't use this for your classes, use GDCLASS() instead.
+#define GDNATIVE_CLASS(m_class, m_inherits)        \
+protected:                                         \
+	static void (*_get_bind_methods())() {         \
+		return nullptr;                            \
+	}                                              \
+                                                   \
+public:                                            \
+	static void initialize_class() {}              \
+                                                   \
+	static const char *get_class_static() {        \
+		return #m_class;                           \
+	}                                              \
+                                                   \
+	static const char *get_parent_class_static() { \
+		return #m_inherits;                        \
+	}                                              \
+                                                   \
 private:
 
 #define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, m_setter, m_getter)
@@ -86,20 +108,26 @@ struct PropertyInfo {
 	}
 };
 
-typedef void GodotObject;
+// typedef void GodotObject;
 
-class Object {
-protected:
-	GodotObject *_owner = nullptr;
+// class Object {
+// protected:
+// 	GodotObject *_owner = nullptr;
 
-	static void (*_get_bind_methods())() {
-		return &Object::_bind_methods;
-	}
+// 	static void (*_get_bind_methods())() {
+// 		return &Object::_bind_methods;
+// 	}
 
-public:
-	static void initialize_class();
-	static void _bind_methods();
-};
+// public:
+// 	static void initialize_class();
+// 	static void _bind_methods();
+// };
+
+template <class T>
+T *Object::cast_to(Object *p_object) {
+	// FIXME
+	return (T *)p_object;
+}
 
 } // namespace godot
 

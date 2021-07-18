@@ -475,14 +475,14 @@ void _err_print_index_error(const char *p_function, const char *p_file, int p_li
  *
  * If warning about deprecated usage, use `WARN_DEPRECATED` or `WARN_DEPRECATED_MSG` instead.
  */
-#define WARN_PRINT_ONCE(m_msg)                                                              \
-	if (true) {                                                                             \
-		static bool first_print = true;                                                     \
-		if (first_print) {                                                                  \
+#define WARN_PRINT_ONCE(m_msg)                                               \
+	if (true) {                                                              \
+		static bool first_print = true;                                      \
+		if (first_print) {                                                   \
 			_err_print_error(FUNCTION_STR, __FILE__, __LINE__, m_msg, true); \
-			first_print = false;                                                            \
-		}                                                                                   \
-	} else                                                                                  \
+			first_print = false;                                             \
+		}                                                                    \
+	} else                                                                   \
 		((void)0)
 
 // Print deprecated warning message macros.
@@ -490,27 +490,27 @@ void _err_print_index_error(const char *p_function, const char *p_file, int p_li
 /**
  * Warns that the current function is deprecated.
  */
-#define WARN_DEPRECATED                                                                                                                                    \
-	if (true) {                                                                                                                                            \
-		static SafeFlag warning_shown;                                                                                                                     \
-		if (!warning_shown.is_set()) {                                                                                                                     \
+#define WARN_DEPRECATED                                                                                                                     \
+	if (true) {                                                                                                                             \
+		static SafeFlag warning_shown;                                                                                                      \
+		if (!warning_shown.is_set()) {                                                                                                      \
 			_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "This method has been deprecated and will be removed in the future.", true); \
-			warning_shown.set();                                                                                                                           \
-		}                                                                                                                                                  \
-	} else                                                                                                                                                 \
+			warning_shown.set();                                                                                                            \
+		}                                                                                                                                   \
+	} else                                                                                                                                  \
 		((void)0)
 
 /**
  * Warns that the current function is deprecated and prints `m_msg`.
  */
-#define WARN_DEPRECATED_MSG(m_msg)                                                                                                                                           \
-	if (true) {                                                                                                                                                              \
-		static SafeFlag warning_shown;                                                                                                                                       \
-		if (!warning_shown.is_set()) {                                                                                                                                       \
+#define WARN_DEPRECATED_MSG(m_msg)                                                                                                                            \
+	if (true) {                                                                                                                                               \
+		static SafeFlag warning_shown;                                                                                                                        \
+		if (!warning_shown.is_set()) {                                                                                                                        \
 			_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "This method has been deprecated and will be removed in the future.", DEBUG_STR(m_msg), true); \
-			warning_shown.set();                                                                                                                                             \
-		}                                                                                                                                                                    \
-	} else                                                                                                                                                                   \
+			warning_shown.set();                                                                                                                              \
+		}                                                                                                                                                     \
+	} else                                                                                                                                                    \
 		((void)0)
 
 /**
@@ -538,6 +538,29 @@ void _err_print_index_error(const char *p_function, const char *p_file, int p_li
 	} else                                                                                                      \
 		((void)0)
 
-}
+} // namespace godot
+
+/**
+ * Gives an error message when a method bind is invalid (likely the hash changed).
+ * Avoids crashing the application in this case. It's not free, so it's debug only.
+ */
+#ifdef DEBUG_ENABLED
+#define CHECK_METHOD_BIND_RET(m_mb, m_ret)                                                                         \
+	if (unlikely(!m_mb)) {                                                                                         \
+		ERR_PRINT_ONCE("Method bind was not found. Likely the engine method changed to an incompatible version."); \
+		return m_ret;                                                                                              \
+	} else                                                                                                         \
+		((void)0)
+
+#define CHECK_METHOD_BIND(m_mb)                                                                                    \
+	if (unlikely(!m_mb)) {                                                                                         \
+		ERR_PRINT_ONCE("Method bind was not found. Likely the engine method changed to an incompatible version."); \
+		return;                                                                                                    \
+	} else                                                                                                         \
+		((void)0)
+#else
+#define CHECK_METHOD_BIND_RET(m_mb, m_ret)
+#define CHECK_METHOD_BIND(m_mb)
+#endif
 
 #endif // ! GODOT_CPP_ERROR_MACROS_HPP

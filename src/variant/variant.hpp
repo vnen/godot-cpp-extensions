@@ -6,7 +6,7 @@
 namespace godot {
 
 class Variant {
-	friend class GDNative;
+	friend class GDExtensionBinding;
 
 	static void init_bindings();
 
@@ -57,6 +57,39 @@ public:
 		PACKED_COLOR_ARRAY,
 
 		VARIANT_MAX
+	};
+
+	enum Operator {
+		//comparison
+		OP_EQUAL,
+		OP_NOT_EQUAL,
+		OP_LESS,
+		OP_LESS_EQUAL,
+		OP_GREATER,
+		OP_GREATER_EQUAL,
+		//mathematic
+		OP_ADD,
+		OP_SUBTRACT,
+		OP_MULTIPLY,
+		OP_DIVIDE,
+		OP_NEGATE,
+		OP_POSITIVE,
+		OP_MODULE,
+		//bitwise
+		OP_SHIFT_LEFT,
+		OP_SHIFT_RIGHT,
+		OP_BIT_AND,
+		OP_BIT_OR,
+		OP_BIT_XOR,
+		OP_BIT_NEGATE,
+		//logic
+		OP_AND,
+		OP_OR,
+		OP_XOR,
+		OP_NOT,
+		//containment
+		OP_IN,
+		OP_MAX
 	};
 
 	Variant() = default;

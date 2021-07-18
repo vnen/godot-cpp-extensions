@@ -6,7 +6,11 @@
 #include <src/core/object.hpp>
 #include <src/variant/variant.hpp>
 
-#include "src/gen/engine_classes.hpp"
+#include <classes/button.hpp>
+#include <classes/label.hpp>
+#include <classes/node2d.hpp>
+
+// #include "src/gen/engine_classes.hpp"
 
 class MyScene : public godot::Node2D {
     GDCLASS(MyScene, Node2D);

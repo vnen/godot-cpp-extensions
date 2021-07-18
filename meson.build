@@ -12,7 +12,7 @@ lib_sources = [
     'src/core/object.cpp',
     'src/variant/variant.cpp',
     # 'src/gen/core_types.cpp',
-    'src/gen/engine_classes.cpp',
+    # 'src/gen/engine_classes.cpp',
     'src/variant/char_string.cpp',
 ]
 

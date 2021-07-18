@@ -136,7 +136,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
             nullptr, // GDNativeExtensionClassGetVirtual get_virtual_func;
         };
 
-        interface->classdb_register_extension_class(library, cl.name, cl.parent_name, &class_info);
+        internal::interface->classdb_register_extension_class(internal::library, cl.name, cl.parent_name, &class_info);
 
         for (MethodBind *method : cl.method_order) {
             GDNativeExtensionClassMethodInfo method_info = {
@@ -153,7 +153,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
                 0, //uint32_t default_argument_count;
                 nullptr, //GDNativeVariantPtr *default_arguments;
             };
-            interface->classdb_register_extension_class_method(library, cl.name, &method_info);
+            internal::interface->classdb_register_extension_class_method(internal::library, cl.name, &method_info);
         }
 
         for (PropertyInfo property : cl.property_list) {
@@ -168,7 +168,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 
             const PropertySetGet &setget = cl.property_setget.find(property.name)->second;
 
-            interface->classdb_register_extension_class_property(library, cl.name, &info, setget.setter, setget.getter);
+            internal::interface->classdb_register_extension_class_property(internal::library, cl.name, &info, setget.setter, setget.getter);
         }
     }
 }
@@ -180,7 +180,7 @@ void ClassDB::deinitialize(GDNativeInitializationLevel p_level) {
             continue;
         }
 
-        interface->classdb_unregister_extension_class(library, cl.name);
+        internal::interface->classdb_unregister_extension_class(internal::library, cl.name);
 
         for (MethodBind *method : cl.method_order) {
             memdelete(method);

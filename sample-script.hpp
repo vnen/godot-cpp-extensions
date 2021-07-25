@@ -35,6 +35,8 @@ public:
 
     int method_with_many_params(int par1, int par2, int par3, int par4);
 
+    MyScene() : Node2D(godot::internal::empty_constructor()) {}
+
 };
 
 #endif // ! SAMPLE_SCRIPT_H

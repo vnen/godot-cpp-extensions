@@ -1,6 +1,7 @@
 #include <variant/char_string.hpp>
 
 #include <core/memory.hpp>
+#include <variant/node_path.hpp>
 #include <variant/string.hpp>
 
 #include <godot.hpp>
@@ -107,5 +108,13 @@ CharWideString String::wide_string() const {
 
     return CharWideString(cstr, size + 1);
 }
+
+NodePath::NodePath(const char *from) : NodePath(String(from)) {}
+
+NodePath::NodePath(const wchar_t *from) : NodePath(String(from)) {}
+
+NodePath::NodePath(const char16_t *from) : NodePath(String(from)) {}
+
+NodePath::NodePath(const char32_t *from) : NodePath(String(from)) {}
 
 } // namespace godot

@@ -7,10 +7,10 @@
 #include <core/defs.hpp>
 #include <core/error_macros.hpp>
 
-void *operator new(size_t p_size, const char *p_description);
+void *operator new(size_t p_size, const char *p_description); ///< operator new that takes a description and uses MemoryStaticPool
+void *operator new(size_t p_size, void *p_pointer, size_t check, const char *p_description); ///< operator new that takes a description and uses a pointer to the preallocated memory
 
 _ALWAYS_INLINE_ void *operator new(size_t p_size, void *p_pointer, size_t check, const char *p_description) {
-
 	return p_pointer;
 }
 
@@ -25,7 +25,8 @@ public:
 	static void free_static(void *p_ptr);
 };
 
-#define memnew(m_v) new ("") m_v
+#define memnew(m_v) (new ("") m_v)
+#define memnew_placement(m_placement, m_class) (new (m_placement, sizeof(m_class), "") m_class)
 
 template <class T>
 void memdelete(T *p_class) {

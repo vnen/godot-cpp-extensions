@@ -26,8 +26,8 @@ void MyScene::_bind_methods() {
 }
 
 void MyScene::_ready() {
-    button = get_node<Button>(String("Button"));
-    label = get_node<Label>(String("Label"));
+    button = get_node<Button>("Button");
+    label = get_node<Label>("Label");
 
     label->set_text("Ready was called!");
 
@@ -44,6 +44,9 @@ void MyScene::_ready() {
 
     std::cout << "Read text: " << txt_str << std::endl;
 
+    Label *new_label = memnew(Label);
+    new_label->set_text("Hey!");
+    add_child(new_label);
 }
 
 void MyScene::on_button_down() {

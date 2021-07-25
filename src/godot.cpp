@@ -13,12 +13,14 @@ namespace internal {
 
 const GDNativeInterface *interface;
 GDNativeExtensionClassLibraryPtr library;
+void *token;
 
 }
 
 GDNativeBool GDExtensionBinding::init(const GDNativeInterface *p_interface, const GDNativeExtensionClassLibraryPtr p_library, GDNativeInitialization *r_initialization) {
     internal::interface = p_interface;
     internal::library = p_library;
+    internal::token = p_library;
 
     r_initialization->initialize = initialize_level;
     r_initialization->deinitialize = deinitialize_level;

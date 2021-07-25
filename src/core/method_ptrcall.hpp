@@ -44,6 +44,9 @@ struct PtrToArg {};
 		_FORCE_INLINE_ static void encode(m_type p_val, void *p_ptr) {            \
 			*((m_conv *)p_ptr) = static_cast<m_conv>(p_val);                      \
 		}                                                                         \
+		_FORCE_INLINE_ static m_conv encode_arg(m_type p_val) {                   \
+			return static_cast<m_conv>(p_val);                                    \
+		}                                                                         \
 	};                                                                            \
 	template <>                                                                   \
 	struct PtrToArg<const m_type &> {                                             \
@@ -53,6 +56,9 @@ struct PtrToArg {};
 		typedef m_conv EncodeT;                                                   \
 		_FORCE_INLINE_ static void encode(m_type p_val, void *p_ptr) {            \
 			*((m_conv *)p_ptr) = static_cast<m_conv>(p_val);                      \
+		}                                                                         \
+		_FORCE_INLINE_ static m_conv encode_arg(m_type p_val) {                   \
+			return static_cast<m_conv>(p_val);                                    \
 		}                                                                         \
 	}
 
@@ -96,6 +102,6 @@ MAKE_PTRARG(String);
 MAKE_PTRARG(Vector2);
 MAKE_PTRARG(Vector2i);
 
-}
+} // namespace godot
 
 #endif // ! GODOT_CPP_METHOD_PTRCALL_HPP

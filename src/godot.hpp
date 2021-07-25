@@ -9,6 +9,7 @@ namespace internal {
 
 extern "C" const GDNativeInterface *interface;
 extern "C" GDNativeExtensionClassLibraryPtr library;
+extern "C" void *token;
 
 }
 

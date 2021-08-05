@@ -1,11 +1,10 @@
 #ifndef GODOT_CPP_METHOD_PTRCALL_HPP
 #define GODOT_CPP_METHOD_PTRCALL_HPP
 
-#include "defs.hpp"
+#include <core/defs.hpp>
 
-#include "variant/variant.hpp"
-
-#include "variant/builtin_types.hpp"
+#include <variant/variant.hpp>
+#include <godot.hpp>
 
 namespace godot {
 
@@ -84,7 +83,7 @@ struct PtrToArg {};
 		}                                                                     \
 	}
 
-MAKE_PTRARGCONV(bool, uint32_t);
+MAKE_PTRARGCONV(bool, uint8_t);
 // Integer types.
 MAKE_PTRARGCONV(uint8_t, int64_t);
 MAKE_PTRARGCONV(int8_t, int64_t);
@@ -101,6 +100,59 @@ MAKE_PTRARG(double);
 MAKE_PTRARG(String);
 MAKE_PTRARG(Vector2);
 MAKE_PTRARG(Vector2i);
+MAKE_PTRARG(Rect2);
+MAKE_PTRARG(Rect2i);
+MAKE_PTRARG_BY_REFERENCE(Vector3);
+MAKE_PTRARG_BY_REFERENCE(Vector3i);
+MAKE_PTRARG(Transform2D);
+MAKE_PTRARG_BY_REFERENCE(Plane);
+MAKE_PTRARG(Quaternion);
+MAKE_PTRARG_BY_REFERENCE(AABB);
+MAKE_PTRARG_BY_REFERENCE(Basis);
+MAKE_PTRARG_BY_REFERENCE(Transform3D);
+MAKE_PTRARG_BY_REFERENCE(Color);
+MAKE_PTRARG(StringName);
+MAKE_PTRARG(NodePath);
+MAKE_PTRARG(RID);
+// Object doesn't need this.
+MAKE_PTRARG(Callable);
+MAKE_PTRARG(Signal);
+MAKE_PTRARG(Dictionary);
+MAKE_PTRARG(Array);
+MAKE_PTRARG(PackedByteArray);
+MAKE_PTRARG(PackedInt32Array);
+MAKE_PTRARG(PackedInt64Array);
+MAKE_PTRARG(PackedFloat32Array);
+MAKE_PTRARG(PackedFloat64Array);
+MAKE_PTRARG(PackedStringArray);
+MAKE_PTRARG(PackedVector2Array);
+MAKE_PTRARG(PackedVector3Array);
+MAKE_PTRARG(PackedColorArray);
+MAKE_PTRARG_BY_REFERENCE(Variant);
+
+// This is for Object.
+
+template <class T>
+struct PtrToArg<T *> {
+	_FORCE_INLINE_ static T *convert(const void *p_ptr) {
+		return reinterpret_cast<T *>(godot::internal::interface->object_get_instance_binding(p_ptr, godot::internal::token, T::___binding_callbacks));
+	}
+	typedef Object *EncodeT;
+	_FORCE_INLINE_ static void encode(T *p_var, void *p_ptr) {
+		p_ptr = p_var->_owner;
+	}
+};
+
+template <class T>
+struct PtrToArg<const T *> {
+	_FORCE_INLINE_ static const T *convert(const void *p_ptr) {
+		return reinterpret_cast<const T *>(godot::internal::interface->object_get_instance_binding(p_ptr, godot::internal::token, T::___binding_callbacks));
+	}
+	typedef const Object *EncodeT;
+	_FORCE_INLINE_ static void encode(T *p_var, void *p_ptr) {
+		p_ptr = p_var->_owner;
+	}
+};
 
 } // namespace godot
 

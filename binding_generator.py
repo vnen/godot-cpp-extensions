@@ -18,6 +18,7 @@ def generate_bindings(api_filepath, use_template_get_node, output_dir="gen"):
     generate_global_constants(api, output_dir)
     generate_builtin_bindings(api, output_dir, "float_64")
     generate_engine_classes_bindings(api, output_dir, use_template_get_node)
+    generate_utility_functions(api, output_dir)
 
 
 builtin_classes = []
@@ -73,7 +74,7 @@ def generate_builtin_bindings(api, output_dir, build_config):
                 if "arguments" in constructor:
                     for argument in constructor["arguments"]:
                         if is_included(argument["type"], class_name):
-                            if "default_value" in argument:
+                            if "default_value" in argument and argument["type"] != "Variant":
                                 fully_used_classes.add(argument["type"])
                             else:
                                 used_classes.add(argument["type"])
@@ -83,7 +84,7 @@ def generate_builtin_bindings(api, output_dir, build_config):
                 if "arguments" in method:
                     for argument in method["arguments"]:
                         if is_included(argument["type"], class_name):
-                            if "default_value" in argument:
+                            if "default_value" in argument and argument["type"] != "Variant":
                                 fully_used_classes.add(argument["type"])
                             else:
                                 used_classes.add(argument["type"])
@@ -240,7 +241,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
             method_signature = f"\t{class_name}("
             if "arguments" in constructor:
                 method_signature += make_function_parameters(
-                    constructor["arguments"], include_default=True
+                    constructor["arguments"], include_default=True, for_builtin=True
                 )
             method_signature += ");"
 
@@ -287,7 +288,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
             method_signature += f'{method["name"]}('
             if "arguments" in method:
                 method_signature += make_function_parameters(
-                    method["arguments"], include_default=True
+                    method["arguments"], include_default=True, for_builtin=True
                 )
             method_signature += ")"
             if method["is_const"]:
@@ -441,7 +442,7 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
             method_signature = f"{class_name}::{class_name}("
             if "arguments" in constructor:
                 method_signature += make_function_parameters(
-                    constructor["arguments"], include_default=False
+                    constructor["arguments"], include_default=False, for_builtin=True
                 )
             method_signature += ") {"
 
@@ -452,7 +453,11 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                 method_call += ", "
                 arguments = []
                 for argument in constructor["arguments"]:
-                    (encode, arg_name) = get_encoded_arg(argument["name"], argument["type"], argument["meta"] if "meta" in argument else None)
+                    (encode, arg_name) = get_encoded_arg(
+                        argument["name"],
+                        argument["type"],
+                        argument["meta"] if "meta" in argument else None,
+                    )
                     result += encode
                     arguments.append(arg_name)
                 method_call += ", ".join(arguments)
@@ -482,7 +487,7 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
             method_signature += f'{class_name}::{method["name"]}('
             if "arguments" in method:
                 method_signature += make_function_parameters(
-                    method["arguments"], include_default=False
+                    method["arguments"], include_default=False, for_builtin=True
                 )
             method_signature += ")"
             if method["is_const"]:
@@ -503,7 +508,11 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                 arguments = []
                 method_call += ", "
                 for argument in method["arguments"]:
-                    (encode, arg_name) = get_encoded_arg(argument["name"], argument["type"], argument["meta"] if "meta" in argument else None)
+                    (encode, arg_name) = get_encoded_arg(
+                        argument["name"],
+                        argument["type"],
+                        argument["meta"] if "meta" in argument else None,
+                    )
                     result += encode
                     arguments.append(arg_name)
                 method_call += ", ".join(arguments)
@@ -544,7 +553,9 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                     result.append(
                         f'{correct_type(operator["return_type"])} {class_name}::operator{operator["name"]}({type_for_parameter(operator["right_type"])}other) const {{'
                     )
-                    (encode, arg_name) = get_encoded_arg("other", operator["right_type"], None)
+                    (encode, arg_name) = get_encoded_arg(
+                        "other", operator["right_type"], None
+                    )
                     result += encode
                     result.append(
                         f'\treturn internal::_call_builtin_operator_ptr<{correct_type(operator["return_type"])}>(_method_bindings.operator_{get_operator_id_name(operator["name"])}_{operator["right_type"]}, (const GDNativeTypePtr)&opaque, (const GDNativeTypePtr){arg_name});'
@@ -689,7 +700,7 @@ def generate_engine_class_header(
     result.append(f"class {class_name} : public {inherits} {{")
 
     # if class_name != "Object":
-    result.append(f'\tGDNATIVE_CLASS({class_name}, {inherits})')
+    result.append(f"\tGDNATIVE_CLASS({class_name}, {inherits})")
     result.append("")
 
     result.append("public:")
@@ -842,7 +853,7 @@ def generate_engine_class_source(
             result.append(
                 f'\tstatic GDNativeMethodBindPtr ___method_bind = internal::interface->classdb_get_method_bind("{class_name}", "{method["name"]}", {method["hash"]});'
             )
-            call = "\t"
+            method_call = "\t"
             is_ref = False
             if "return_value" in method and method["return_value"]["type"] != "void":
                 return_type = method["return_value"]["type"]
@@ -859,45 +870,42 @@ def generate_engine_class_source(
                     or is_variant(return_type)
                     or is_enum(return_type)
                 ):
-                    call += f"return internal::_call_native_mb_ret<{correct_type(return_type, meta_type)}>(___method_bind, _owner"
+                    method_call += f"return internal::_call_native_mb_ret<{correct_type(return_type, meta_type)}>(___method_bind, _owner"
                 elif is_refcounted(return_type):
-                    call += f"return Ref<{return_type}>::___internal_constructor(internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
+                    method_call += f"return Ref<{return_type}>::___internal_constructor(internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
                     is_ref = True
                 else:
-                    call += f"return ({correct_type(return_type)})internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
+                    method_call += f"return ({correct_type(return_type)})internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
             else:
                 result.append(f"\tCHECK_METHOD_BIND(___method_bind);")
-                call += f"internal::_call_native_mb_no_ret(___method_bind, _owner"
+                method_call += f"internal::_call_native_mb_no_ret(___method_bind, _owner"
 
             if "arguments" in method:
-                call += ", "
-                args = []
+                method_call += ", "
+                arguments = []
                 for argument in method["arguments"]:
-                    arg = escape_identifier(argument["name"])
-                    if is_engine_class(argument["type"]):
-                        arg += "->_owner"
-                    else:
-                        arg_type = correct_type(argument["type"])
-                        if is_pod_type(arg_type):
-                            result.append(f'\t{get_gdnative_type(arg_type)} {arg}_encoded;')
-                            result.append(f'\tPtrToArg<{correct_type(argument["type"], argument["meta"] if "meta" in argument else None)}>::encode({arg}, &{arg}_encoded);')
-                            arg = f'&{arg}_encoded'
-                        else:
-                            arg = f'&{arg}'
-                    args.append(arg)
-                call += ", ".join(args)
+                    (encode, arg_name) = get_encoded_arg(
+                        argument["name"],
+                        argument["type"],
+                        argument["meta"] if "meta" in argument else None,
+                    )
+                    result += encode
+                    arguments.append(arg_name)
+                method_call += ", ".join(arguments)
 
             if is_ref:
-                call += ")"  # Close Ref<> constructor.
-            call += ");"
-            result.append(call)
+                method_call += ")"  # Close Ref<> constructor.
+            method_call += ");"
+            result.append(method_call)
 
             result.append("}")
             result.append("")
 
     # Constructor.
     result.append("")
-    result.append(f"{class_name}::{class_name}() : {inherits}(godot::internal::empty_constructor()) {{")
+    result.append(
+        f"{class_name}::{class_name}() : {inherits}(godot::internal::empty_constructor()) {{"
+    )
     result.append(
         f'\tstatic GDNativeClassConstructor constructor = internal::interface->classdb_get_constructor("{class_name}");'
     )
@@ -958,6 +966,137 @@ def generate_global_constants(api, output_dir):
         header_file.write("\n".join(header))
 
 
+def generate_utility_functions(api, output_dir):
+    include_gen_folder = Path(output_dir) / "include" / "variant"
+    source_gen_folder = Path(output_dir) / "src" / "variant"
+
+    include_gen_folder.mkdir(parents=True, exist_ok=True)
+    source_gen_folder.mkdir(parents=True, exist_ok=True)
+
+    # Generate header.
+
+    header = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    header_filename = include_gen_folder / "utility_functions.hpp"
+
+    header_guard = "GODOT_CPP_UTILIY_FUNCTIONS_HPP"
+    header.append(f"#ifndef {header_guard}")
+    header.append(f"#define {header_guard}")
+    header.append("")
+    header.append("#include <variant/builtin_types.hpp>")
+    header.append("")
+    header.append("namespace godot {")
+    header.append("")
+    header.append("class UtilityFunctions {")
+    header.append("public:")
+
+    for function in api["utility_functions"]:
+        function_signature = "\tstatic "
+        if "return_type" in function:
+            function_signature += f'{correct_type(function["return_type"])} '
+        else:
+            function_signature += "void "
+
+        function_signature += f'{escape_identifier(function["name"])}('
+
+        # TODO: varargs
+        if "arguments" in function:
+            function_signature += make_function_parameters(
+                function["arguments"], include_default=True
+            )
+        function_signature += ");"
+
+        header.append(function_signature)
+
+    header.append("};")
+    header.append("")
+    header.append("} // namespace godot")
+    header.append("")
+    header.append(f"#endif // ! {header_guard}")
+
+    with header_filename.open("w+") as header_file:
+        header_file.write("\n".join(header))
+
+    # Generate source.
+
+    source = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    source_filename = source_gen_folder / "utility_functions.cpp"
+
+    source.append("#include <variant/utility_functions.hpp>")
+    source.append("")
+    source.append("#include <core/error_macros.hpp>")
+    source.append("#include <core/engine_ptrcall.hpp>")
+    source.append("")
+    source.append("namespace godot {")
+    source.append("")
+
+    for function in api["utility_functions"]:
+        function_signature = ""
+        if "return_type" in function:
+            function_signature += correct_type(function["return_type"])
+        else:
+            function_signature += "void"
+
+        if not function_signature.endswith("*"):
+            function_signature += " "
+
+        function_signature += (
+            f'UtilityFunctions::{escape_identifier(function["name"])}('
+        )
+
+        # TODO: varargs
+        if "arguments" in function:
+            function_signature += make_function_parameters(
+                function["arguments"], include_default=False
+            )
+        function_signature += ") {"
+
+        source.append(function_signature)
+
+        # Function body.
+
+        source.append(
+            f'\tstatic GDNativePtrUtilityFunction ___function = internal::interface->variant_get_ptr_utility_function("{function["name"]}", {function["hash"]});'
+        )
+
+        function_call = "\t"
+        if "return_type" in function and function["return_type"] != "void":
+            source.append(
+                f'\tCHECK_METHOD_BIND_RET(___function, {get_default_value_for_type(function["return_type"])});'
+            )
+            function_call += "return "
+            if function["return_type"] == "Object":
+                function_call += "internal::_call_utility_ret_obj(___function"
+            else:
+                function_call += f'internal::_call_utility_ret<{correct_type(function["return_type"])}>(___function'
+        else:
+            source.append(f"\tCHECK_METHOD_BIND(___function);")
+            function_call += "internal::_call_utility_no_ret(___function"
+
+        if "arguments" in function:
+            function_call += ", "
+            arguments = []
+            for argument in function["arguments"]:
+                (encode, arg_name) = get_encoded_arg(
+                    argument["name"],
+                    argument["type"],
+                    argument["meta"] if "meta" in argument else None,
+                )
+                source += encode
+                arguments.append(arg_name)
+            function_call += ", ".join(arguments)
+
+        function_call += ");"
+        source.append(function_call)
+
+        source.append("}")
+        source.append("")
+
+    source.append("} // namespace godot")
+
+    with source_filename.open("w+") as source_file:
+        source_file.write("\n".join(source))
+
+
 # Helper functions.
 
 
@@ -967,7 +1106,7 @@ def camel_to_snake(name):
     return name.replace("2_D", "2D").replace("3_D", "3D").lower()
 
 
-def make_function_parameters(parameters, include_default=False):
+def make_function_parameters(parameters, include_default=False, for_builtin=False):
     signature = []
 
     for par in parameters:
@@ -976,7 +1115,7 @@ def make_function_parameters(parameters, include_default=False):
         )
         parameter += escape_identifier(par["name"])
 
-        if include_default and "default_value" in par:
+        if include_default and "default_value" in par and (not for_builtin or par["type"] != "Variant"):
             parameter += " = "
             if is_enum(par["type"]):
                 parameter += f'({correct_type(par["type"])})'
@@ -1013,13 +1152,15 @@ def get_encoded_arg(arg_name, type_name, type_meta):
     name = escape_identifier(arg_name)
     arg_type = correct_type(type_name)
     if is_pod_type(arg_type):
-        result.append(f'\t{get_gdnative_type(arg_type)} {name}_encoded;')
-        result.append(f'\tPtrToArg<{correct_type(type_name, type_meta)}>::encode({name}, &{name}_encoded);')
-        name = f'&{name}_encoded'
-    elif is_engine_class(arg_type):
-        name = f'{name}->_owner'
+        result.append(f"\t{get_gdnative_type(arg_type)} {name}_encoded;")
+        result.append(
+            f"\tPtrToArg<{correct_type(type_name, type_meta)}>::encode({name}, &{name}_encoded);"
+        )
+        name = f"&{name}_encoded"
+    elif is_engine_class(type_name):
+        name = f"{name}->_owner"
     else:
-        name = f'&{name}'
+        name = f"&{name}"
 
     return (result, name)
 

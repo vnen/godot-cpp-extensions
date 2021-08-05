@@ -1,7 +1,9 @@
 #ifndef GODOT_CPP_VARIANT_HPP
 #define GODOT_CPP_VARIANT_HPP
 
-#include "core/defs.hpp"
+#include <core/defs.hpp>
+
+#include <variant/builtin_types.hpp>
 
 namespace godot {
 

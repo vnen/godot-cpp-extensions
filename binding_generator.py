@@ -50,6 +50,18 @@ def generate_builtin_bindings(api, output_dir, build_config):
                 builtin_sizes[size["name"]] = size["size"]
             break
 
+    # Create a file for Variant size, since that class isn't generated.
+    variant_size_filename = include_gen_folder / "variant_size.hpp"
+    with variant_size_filename.open("+w") as variant_size_file:
+        variant_size_source = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+        header_guard = "GODOT_CPP_VARIANT_SIZE_HPP"
+        variant_size_source.append(f"#ifndef {header_guard}")
+        variant_size_source.append(f"#define {header_guard}")
+        variant_size_source.append(f'#define GODOT_CPP_VARIANT_SIZE {builtin_sizes["Variant"]}')
+        variant_size_source.append(f"#endif // ! {header_guard}")
+
+        variant_size_file.write("\n".join(variant_size_source))
+
     for builtin_api in api["builtin_classes"]:
         if is_pod_type(builtin_api["name"]):
             continue
@@ -183,6 +195,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
     result.append(f"class {class_name} {{")
     result.append(f"\tstatic constexpr size_t {snake_class_name}_SIZE = {size};")
     result.append(f"\tuint8_t opaque[{snake_class_name}_SIZE] {{ 0 }};")
+    result.append(f"\tGDNativeTypePtr ptr = const_cast<uint8_t (*)[{snake_class_name}_SIZE]>(&opaque);")
 
     result.append("")
     result.append("\tfriend class Variant;")
@@ -248,7 +261,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
             result.append(method_signature)
 
     # Special cases.
-    if class_name == "String" or class_name == "NodePath":
+    if class_name == "String" or class_name == "StringName" or class_name == "NodePath":
         result.append(f"\t{class_name}(const char *from);")
         result.append(f"\t{class_name}(const wchar_t *from);")
         result.append(f"\t{class_name}(const char16_t *from);")
@@ -327,13 +340,6 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                     result.append(
                         f'\t{correct_type(operator["return_type"])} operator{operator["name"].replace("unary", "")}() const;'
                     )
-
-    # Special cases.
-    if class_name == "String":
-        result.append("\toperator const char *() const;")
-        result.append("\toperator const char16_t *() const;")
-        result.append("\toperator const char32_t *() const;")
-        result.append("\toperator const wchar_t *() const;")
 
     result.append("};")
 

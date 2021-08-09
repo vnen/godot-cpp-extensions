@@ -33,15 +33,21 @@ struct PropertyInfo {
 
 	PropertyInfo() = default;
 
-	PropertyInfo(GDNativeVariantType p_type, const char *p_name) {
-		type = (Variant::Type)p_type;
-		name = p_name;
+	PropertyInfo(Variant::Type p_type, const char *p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const char *p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const char *p_class_name = "") :
+			type(p_type),
+			name(p_name),
+			hint(p_hint),
+			hint_string(p_hint_string),
+			usage(p_usage) {
+		if (hint == PROPERTY_HINT_RESOURCE_TYPE) {
+			class_name = hint_string;
+		} else {
+			class_name = p_class_name;
+		}
 	}
 
-	PropertyInfo(Variant::Type p_type, const char *p_name) {
-		type = p_type;
-		name = p_name;
-	}
+	PropertyInfo(GDNativeVariantType p_type, const char *p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const char *p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const char *p_class_name = "") :
+			PropertyInfo((Variant::Type)p_type, p_name, p_hint, p_hint_string, p_usage, p_class_name) {}
 };
 
 // typedef void GodotObject;

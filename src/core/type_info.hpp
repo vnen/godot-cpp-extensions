@@ -20,16 +20,16 @@ struct GetTypeInfo;
 #define MAKE_TYPE_INFO(m_type, m_var_type)                                                                                     \
 	template <>                                                                                                                \
 	struct GetTypeInfo<m_type> {                                                                                               \
-		static const GDNativeVariantType VARIANT_TYPE = m_var_type;                                                            \
-		static const GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE; \
+		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                                                            \
+		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE; \
 		static inline GDNativePropertyInfo get_class_info() {                                                                  \
 			return PropertyInfo(VARIANT_TYPE, "");                                                                             \
 		}                                                                                                                      \
 	};                                                                                                                         \
 	template <>                                                                                                                \
 	struct GetTypeInfo<const m_type &> {                                                                                       \
-		static const GDNativeVariantType VARIANT_TYPE = m_var_type;                                                            \
-		static const GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE; \
+		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                                                            \
+		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE; \
 		static inline GDNativePropertyInfo get_class_info() {                                                                  \
 			return PropertyInfo(VARIANT_TYPE, "");                                                                             \
 		}                                                                                                                      \
@@ -38,16 +38,16 @@ struct GetTypeInfo;
 #define MAKE_TYPE_INFO_WITH_META(m_type, m_var_type, m_metadata)                         \
 	template <>                                                                          \
 	struct GetTypeInfo<m_type> {                                                         \
-		static const GDNativeVariantType VARIANT_TYPE = m_var_type;                      \
-		static const GDNativeExtensionClassMethodArgumentMetadata METADATA = m_metadata; \
+		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                      \
+		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = m_metadata; \
 		static inline GDNativePropertyInfo get_class_info() {                            \
 			return PropertyInfo(VARIANT_TYPE, "");                                       \
 		}                                                                                \
 	};                                                                                   \
 	template <>                                                                          \
 	struct GetTypeInfo<const m_type &> {                                                 \
-		static const GDNativeVariantType VARIANT_TYPE = m_var_type;                      \
-		static const GDNativeExtensionClassMethodArgumentMetadata METADATA = m_metadata; \
+		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                      \
+		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = m_metadata; \
 		static inline GDNativePropertyInfo get_class_info() {                            \
 			return PropertyInfo(VARIANT_TYPE, "");                                       \
 		}                                                                                \
@@ -69,9 +69,53 @@ MAKE_TYPE_INFO_WITH_META(double, GDNATIVE_VARIANT_TYPE_FLOAT, GDNATIVE_EXTENSION
 
 MAKE_TYPE_INFO(String, GDNATIVE_VARIANT_TYPE_STRING)
 MAKE_TYPE_INFO(Vector2, GDNATIVE_VARIANT_TYPE_VECTOR2)
-MAKE_TYPE_INFO(Vector3, GDNATIVE_VARIANT_TYPE_VECTOR3)
 MAKE_TYPE_INFO(Vector2i, GDNATIVE_VARIANT_TYPE_VECTOR2I)
+MAKE_TYPE_INFO(Rect2, GDNATIVE_VARIANT_TYPE_RECT2)
+MAKE_TYPE_INFO(Rect2i, GDNATIVE_VARIANT_TYPE_RECT2I)
+MAKE_TYPE_INFO(Vector3, GDNATIVE_VARIANT_TYPE_VECTOR3)
 MAKE_TYPE_INFO(Vector3i, GDNATIVE_VARIANT_TYPE_VECTOR3I)
+MAKE_TYPE_INFO(Transform2D, GDNATIVE_VARIANT_TYPE_TRANSFORM2D)
+MAKE_TYPE_INFO(Plane, GDNATIVE_VARIANT_TYPE_PLANE)
+MAKE_TYPE_INFO(Quaternion, GDNATIVE_VARIANT_TYPE_QUATERNION)
+MAKE_TYPE_INFO(AABB, GDNATIVE_VARIANT_TYPE_AABB)
+MAKE_TYPE_INFO(Basis, GDNATIVE_VARIANT_TYPE_BASIS)
+MAKE_TYPE_INFO(Transform3D, GDNATIVE_VARIANT_TYPE_TRANSFORM3D)
+MAKE_TYPE_INFO(Color, GDNATIVE_VARIANT_TYPE_COLOR)
+MAKE_TYPE_INFO(StringName, GDNATIVE_VARIANT_TYPE_STRING_NAME)
+MAKE_TYPE_INFO(NodePath, GDNATIVE_VARIANT_TYPE_NODE_PATH)
+MAKE_TYPE_INFO(RID, GDNATIVE_VARIANT_TYPE_RID)
+MAKE_TYPE_INFO(Callable, GDNATIVE_VARIANT_TYPE_CALLABLE)
+MAKE_TYPE_INFO(Signal, GDNATIVE_VARIANT_TYPE_SIGNAL)
+MAKE_TYPE_INFO(Dictionary, GDNATIVE_VARIANT_TYPE_DICTIONARY)
+MAKE_TYPE_INFO(Array, GDNATIVE_VARIANT_TYPE_ARRAY)
+MAKE_TYPE_INFO(PackedByteArray, GDNATIVE_VARIANT_TYPE_PACKED_BYTE_ARRAY)
+MAKE_TYPE_INFO(PackedInt32Array, GDNATIVE_VARIANT_TYPE_PACKED_INT32_ARRAY)
+MAKE_TYPE_INFO(PackedInt64Array, GDNATIVE_VARIANT_TYPE_PACKED_INT64_ARRAY)
+MAKE_TYPE_INFO(PackedFloat32Array, GDNATIVE_VARIANT_TYPE_PACKED_FLOAT32_ARRAY)
+MAKE_TYPE_INFO(PackedFloat64Array, GDNATIVE_VARIANT_TYPE_PACKED_FLOAT64_ARRAY)
+MAKE_TYPE_INFO(PackedStringArray, GDNATIVE_VARIANT_TYPE_PACKED_STRING_ARRAY)
+MAKE_TYPE_INFO(PackedVector2Array, GDNATIVE_VARIANT_TYPE_PACKED_VECTOR2_ARRAY)
+MAKE_TYPE_INFO(PackedVector3Array, GDNATIVE_VARIANT_TYPE_PACKED_VECTOR3_ARRAY)
+MAKE_TYPE_INFO(PackedColorArray, GDNATIVE_VARIANT_TYPE_PACKED_COLOR_ARRAY)
+
+// For variant.
+template <>
+struct GetTypeInfo<Variant> {
+	static constexpr GDNativeVariantType VARIANT_TYPE = GDNATIVE_VARIANT_TYPE_NIL;
+	static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE;
+	static inline GDNativePropertyInfo get_class_info() {
+		return PropertyInfo(GDNATIVE_VARIANT_TYPE_NIL, "", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT);
+	}
+};
+
+template <>
+struct GetTypeInfo<const Variant &> {
+	static constexpr GDNativeVariantType VARIANT_TYPE = GDNATIVE_VARIANT_TYPE_NIL;
+	static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE;
+	static inline GDNativePropertyInfo get_class_info() {
+		return PropertyInfo(GDNATIVE_VARIANT_TYPE_NIL, "", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT);
+	}
+};
 
 } // namespace godot
 

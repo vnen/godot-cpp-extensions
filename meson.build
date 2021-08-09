@@ -23,6 +23,7 @@ user_sources = [
 
 defines = [
     '-DDEBUG_ENABLED',
+    '-DDEBUG_METHODS_ENABLED',
 ]
 
 compiler_args = [

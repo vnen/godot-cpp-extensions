@@ -6,6 +6,8 @@
 #include <src/variant/variant.hpp>
 #include <src/godot.hpp>
 
+#include <variant/utility_functions.hpp>
+
 #include <iostream>
 
 using namespace godot;
@@ -43,6 +45,8 @@ void MyScene::_ready() {
     txt_str[size] = '\0';
 
     std::cout << "Read text: " << txt_str << std::endl;
+
+    UtilityFunctions::print("Test");
 
     Label *new_label = memnew(Label);
     new_label->set_text("Hey!");

@@ -53,7 +53,9 @@ def generate_builtin_bindings(api, output_dir, build_config):
     # Create a file for Variant size, since that class isn't generated.
     variant_size_filename = include_gen_folder / "variant_size.hpp"
     with variant_size_filename.open("+w") as variant_size_file:
-        variant_size_source = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+        variant_size_source = []
+        add_header("variant_size.hpp", variant_size_source)
+
         header_guard = "GODOT_CPP_VARIANT_SIZE_HPP"
         variant_size_source.append(f"#ifndef {header_guard}")
         variant_size_source.append(f"#define {header_guard}")
@@ -68,12 +70,8 @@ def generate_builtin_bindings(api, output_dir, build_config):
 
         size = builtin_sizes[builtin_api["name"]]
 
-        header_filename = include_gen_folder / (
-            camel_to_snake(builtin_api["name"]) + ".hpp"
-        )
-        source_filename = source_gen_folder / (
-            camel_to_snake(builtin_api["name"]) + ".cpp"
-        )
+        header_filename = include_gen_folder / (camel_to_snake(builtin_api["name"]) + ".hpp")
+        source_filename = source_gen_folder / (camel_to_snake(builtin_api["name"]) + ".cpp")
 
         # Check used classes for header include
         used_classes = set()
@@ -124,23 +122,17 @@ def generate_builtin_bindings(api, output_dir, build_config):
                 used_classes.remove(type_name)
 
         with header_filename.open("w+") as header_file:
-            header_file.write(
-                generate_builtin_class_header(
-                    builtin_api, size, used_classes, fully_used_classes
-                )
-            )
+            header_file.write(generate_builtin_class_header(builtin_api, size, used_classes, fully_used_classes))
 
         with source_filename.open("w+") as source_file:
-            source_file.write(
-                generate_builtin_class_source(
-                    builtin_api, size, used_classes, fully_used_classes
-                )
-            )
+            source_file.write(generate_builtin_class_source(builtin_api, size, used_classes, fully_used_classes))
 
     # Create a header with all builtin types for convenience.
     builtin_header_filename = include_gen_folder / "builtin_types.hpp"
     with builtin_header_filename.open("w+") as builtin_header_file:
-        builtin_header = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+        builtin_header = []
+        add_header("builtin_types.hpp", builtin_header)
+
         builtin_header.append("#ifndef GODOT_CPP_BUILTIN_TYPES_HPP")
         builtin_header.append("#define GODOT_CPP_BUILTIN_TYPES_HPP")
 
@@ -157,12 +149,14 @@ def generate_builtin_bindings(api, output_dir, build_config):
 
 
 def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_classes):
-    result = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    result = []
 
     class_name = builtin_api["name"]
     snake_class_name = camel_to_snake(class_name).upper()
 
     header_guard = f"GODOT_CPP_{snake_class_name}_HPP"
+
+    add_header(f"{snake_class_name.lower()}.hpp", result)
 
     result.append(f"#ifndef {header_guard}")
     result.append(f"#define {header_guard}")
@@ -205,9 +199,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
 
     if "constructors" in builtin_api:
         for constructor in builtin_api["constructors"]:
-            result.append(
-                f'\t\tGDNativePtrConstructor constructor_{constructor["index"]};'
-            )
+            result.append(f'\t\tGDNativePtrConstructor constructor_{constructor["index"]};')
 
     if builtin_api["has_destructor"]:
         result.append("\t\tGDNativePtrDestructor destructor;")
@@ -237,9 +229,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                     f'\t\tGDNativePtrOperatorEvaluator operator_{get_operator_id_name(operator["name"])}_{operator["right_type"]};'
                 )
             else:
-                result.append(
-                    f'\t\tGDNativePtrOperatorEvaluator operator_{get_operator_id_name(operator["name"])};'
-                )
+                result.append(f'\t\tGDNativePtrOperatorEvaluator operator_{get_operator_id_name(operator["name"])};')
 
     result.append("\t} _method_bindings;")
 
@@ -280,9 +270,7 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                 if axis_constants_count == 3:
                     result.append("\t};")
             else:
-                result.append(
-                    f'\tstatic const {correct_type(constant["type"])} {constant["name"]};'
-                )
+                result.append(f'\tstatic const {correct_type(constant["type"])} {constant["name"]};')
 
     if builtin_api["has_destructor"]:
         result.append(f"\t~{class_name}();")
@@ -321,13 +309,9 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
     if "members" in builtin_api:
         for member in builtin_api["members"]:
             if f'get_{member["name"]}' not in method_list:
-                result.append(
-                    f'\t{correct_type(member["type"])} get_{member["name"]}() const;'
-                )
+                result.append(f'\t{correct_type(member["type"])} get_{member["name"]}() const;')
             if f'set_{member["name"]}' not in method_list:
-                result.append(
-                    f'\tvoid set_{member["name"]}({type_for_parameter(member["type"])}value);'
-                )
+                result.append(f'\tvoid set_{member["name"]}({type_for_parameter(member["type"])}value);')
 
     if "operators" in builtin_api:
         for operator in builtin_api["operators"]:
@@ -382,11 +366,13 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
 
 
 def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_classes):
-    result = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    result = []
 
     class_name = builtin_api["name"]
     snake_class_name = camel_to_snake(class_name)
     enum_type_name = f"GDNATIVE_VARIANT_TYPE_{snake_class_name.upper()}"
+
+    add_header(f"{snake_class_name}.cpp", result)
 
     result.append("")
     result.append(f"#include <variant/{snake_class_name}.hpp>")
@@ -484,7 +470,9 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
 
             result.append(method_signature)
 
-            method_call = f'\tinternal::_call_builtin_constructor(_method_bindings.constructor_{constructor["index"]}, &opaque'
+            method_call = (
+                f'\tinternal::_call_builtin_constructor(_method_bindings.constructor_{constructor["index"]}, &opaque'
+            )
             if "arguments" in constructor:
                 method_call += ", "
                 arguments = []
@@ -537,9 +525,7 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                 method_call += f'return internal::_call_builtin_method_ptr_ret<{correct_type(method["return_type"])}>('
             else:
                 method_call += f"internal::_call_builtin_method_ptr_no_ret("
-            method_call += (
-                f'_method_bindings.method_{method["name"]}, (GDNativeTypePtr)&opaque'
-            )
+            method_call += f'_method_bindings.method_{method["name"]}, (GDNativeTypePtr)&opaque'
             if "arguments" in method:
                 arguments = []
                 method_call += ", "
@@ -561,18 +547,14 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
     if "members" in builtin_api:
         for member in builtin_api["members"]:
             if f'get_{member["name"]}' not in method_list:
-                result.append(
-                    f'{correct_type(member["type"])} {class_name}::get_{member["name"]}() const {{'
-                )
+                result.append(f'{correct_type(member["type"])} {class_name}::get_{member["name"]}() const {{')
                 result.append(
                     f'\treturn internal::_call_builtin_ptr_getter<{correct_type(member["type"])}>(_method_bindings.member_{member["name"]}_getter, (const GDNativeTypePtr)&opaque);'
                 )
                 result.append("}")
 
             if f'set_{member["name"]}' not in method_list:
-                result.append(
-                    f'void {class_name}::set_{member["name"]}({type_for_parameter(member["type"])}value) {{'
-                )
+                result.append(f'void {class_name}::set_{member["name"]}({type_for_parameter(member["type"])}value) {{')
                 (encode, arg_name) = get_encoded_arg("value", member["type"], None)
                 result += encode
                 result.append(
@@ -589,9 +571,7 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                     result.append(
                         f'{correct_type(operator["return_type"])} {class_name}::operator{operator["name"]}({type_for_parameter(operator["right_type"])}other) const {{'
                     )
-                    (encode, arg_name) = get_encoded_arg(
-                        "other", operator["right_type"], None
-                    )
+                    (encode, arg_name) = get_encoded_arg("other", operator["right_type"], None)
                     result += encode
                     result.append(
                         f'\treturn internal::_call_builtin_operator_ptr<{correct_type(operator["return_type"])}>(_method_bindings.operator_{get_operator_id_name(operator["name"])}_{operator["right_type"]}, (const GDNativeTypePtr)&opaque, (const GDNativeTypePtr){arg_name});'
@@ -632,12 +612,8 @@ def generate_engine_classes_bindings(api, output_dir, use_template_get_node):
 
         class_name = class_api["name"]
 
-        header_filename = include_gen_folder / (
-            camel_to_snake(class_api["name"]) + ".hpp"
-        )
-        source_filename = source_gen_folder / (
-            camel_to_snake(class_api["name"]) + ".cpp"
-        )
+        header_filename = include_gen_folder / (camel_to_snake(class_api["name"]) + ".hpp")
+        source_filename = source_gen_folder / (camel_to_snake(class_api["name"]) + ".cpp")
 
         if "methods" in class_api:
             for method in class_api["methods"]:
@@ -655,9 +631,7 @@ def generate_engine_classes_bindings(api, output_dir, use_template_get_node):
                 if "return_value" in method:
                     if is_included(method["return_value"]["type"], class_name):
                         if is_enum(method["return_value"]["type"]):
-                            fully_used_classes.add(
-                                get_enum_class(method["return_value"]["type"])
-                            )
+                            fully_used_classes.add(get_enum_class(method["return_value"]["type"]))
                         elif is_variant(method["return_value"]["type"]):
                             fully_used_classes.add(method["return_value"]["type"])
                         else:
@@ -689,26 +663,22 @@ def generate_engine_classes_bindings(api, output_dir, use_template_get_node):
 
         with header_filename.open("w+") as header_file:
             header_file.write(
-                generate_engine_class_header(
-                    class_api, used_classes, fully_used_classes, use_template_get_node
-                )
+                generate_engine_class_header(class_api, used_classes, fully_used_classes, use_template_get_node)
             )
 
         with source_filename.open("w+") as source_file:
             source_file.write(
-                generate_engine_class_source(
-                    class_api, used_classes, fully_used_classes, use_template_get_node
-                )
+                generate_engine_class_source(class_api, used_classes, fully_used_classes, use_template_get_node)
             )
 
 
-def generate_engine_class_header(
-    class_api, used_classes, fully_used_classes, use_template_get_node
-):
-    result = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+def generate_engine_class_header(class_api, used_classes, fully_used_classes, use_template_get_node):
+    result = []
 
     class_name = class_api["name"]
     snake_class_name = camel_to_snake(class_name).upper()
+
+    add_header(f"{snake_class_name.lower()}.hpp", result)
 
     header_guard = f"GODOT_CPP_{snake_class_name}_HPP"
 
@@ -759,9 +729,7 @@ def generate_engine_class_header(
             if "return_value" in method:
                 method_signature += correct_type(
                     method["return_value"]["type"],
-                    method["return_value"]["meta"]
-                    if "meta" in method["return_value"]
-                    else None,
+                    method["return_value"]["meta"] if "meta" in method["return_value"] else None,
                 )
             else:
                 method_signature += "void"
@@ -769,19 +737,13 @@ def generate_engine_class_header(
             if not method_signature.endswith("*"):
                 method_signature += " "
 
-            if (
-                use_template_get_node
-                and class_name == "Node"
-                and method["name"] == "get_node"
-            ):
+            if use_template_get_node and class_name == "Node" and method["name"] == "get_node":
                 method_signature += "get_node_internal("
             else:
                 method_signature += f'{escape_identifier(method["name"])}('
 
             if "arguments" in method:
-                method_signature += make_function_parameters(
-                    method["arguments"], include_default=True
-                )
+                method_signature += make_function_parameters(method["arguments"], include_default=True)
 
             method_signature += ")"
 
@@ -798,9 +760,7 @@ def generate_engine_class_header(
         result.append("\tstatic T *cast_to(Object *p_object);")
     elif use_template_get_node and class_name == "Node":
         result.append("\ttemplate<class T>")
-        result.append(
-            "\tT *get_node(const NodePath &p_path) { return Object::cast_to<T>(get_node_internal(p_path)); }"
-        )
+        result.append("\tT *get_node(const NodePath &p_path) { return Object::cast_to<T>(get_node_internal(p_path)); }")
 
     # Constructor.
     result.append("")
@@ -816,14 +776,14 @@ def generate_engine_class_header(
     return "\n".join(result)
 
 
-def generate_engine_class_source(
-    class_api, used_classes, fully_used_classes, use_template_get_node
-):
-    result = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+def generate_engine_class_source(class_api, used_classes, fully_used_classes, use_template_get_node):
+    result = []
 
     class_name = class_api["name"]
     snake_class_name = camel_to_snake(class_name)
     inherits = class_api["inherits"] if "inherits" in class_api else "Wrapped"
+
+    add_header(f"{snake_class_name}.cpp", result)
 
     result.append(f"#include <classes/{snake_class_name}.hpp>")
     result.append("")
@@ -851,9 +811,7 @@ def generate_engine_class_source(
             if "return_value" in method:
                 method_signature += correct_type(
                     method["return_value"]["type"],
-                    method["return_value"]["meta"]
-                    if "meta" in method["return_value"]
-                    else None,
+                    method["return_value"]["meta"] if "meta" in method["return_value"] else None,
                 )
             else:
                 method_signature += "void"
@@ -861,21 +819,13 @@ def generate_engine_class_source(
             if not method_signature.endswith("*"):
                 method_signature += " "
 
-            if (
-                use_template_get_node
-                and class_name == "Node"
-                and method["name"] == "get_node"
-            ):
+            if use_template_get_node and class_name == "Node" and method["name"] == "get_node":
                 method_signature += "Node::get_node_internal("
             else:
-                method_signature += (
-                    f'{class_name}::{escape_identifier(method["name"])}('
-                )
+                method_signature += f'{class_name}::{escape_identifier(method["name"])}('
 
             if "arguments" in method:
-                method_signature += make_function_parameters(
-                    method["arguments"], include_default=False
-                )
+                method_signature += make_function_parameters(method["arguments"], include_default=False)
 
             method_signature += ")"
 
@@ -893,19 +843,9 @@ def generate_engine_class_source(
             is_ref = False
             if "return_value" in method and method["return_value"]["type"] != "void":
                 return_type = method["return_value"]["type"]
-                meta_type = (
-                    method["return_value"]["meta"]
-                    if "meta" in method["return_value"]
-                    else None
-                )
-                result.append(
-                    f"\tCHECK_METHOD_BIND_RET(___method_bind, {get_default_value_for_type(return_type)});"
-                )
-                if (
-                    is_pod_type(return_type)
-                    or is_variant(return_type)
-                    or is_enum(return_type)
-                ):
+                meta_type = method["return_value"]["meta"] if "meta" in method["return_value"] else None
+                result.append(f"\tCHECK_METHOD_BIND_RET(___method_bind, {get_default_value_for_type(return_type)});")
+                if is_pod_type(return_type) or is_variant(return_type) or is_enum(return_type):
                     method_call += f"return internal::_call_native_mb_ret<{correct_type(return_type, meta_type)}>(___method_bind, _owner"
                 elif is_refcounted(return_type):
                     method_call += f"return Ref<{return_type}>::___internal_constructor(internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
@@ -939,9 +879,7 @@ def generate_engine_class_source(
 
     # Constructor.
     result.append("")
-    result.append(
-        f"{class_name}::{class_name}() : {inherits}(godot::internal::empty_constructor()) {{"
-    )
+    result.append(f"{class_name}::{class_name}() : {inherits}(godot::internal::empty_constructor()) {{")
     result.append(
         f'\tstatic GDNativeClassConstructor constructor = internal::interface->classdb_get_constructor("{class_name}");'
     )
@@ -966,7 +904,9 @@ def generate_global_constants(api, output_dir):
 
     # Generate header
 
-    header = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    header = []
+    add_header("global_constants.hpp", header)
+
     header_filename = include_gen_folder / "global_constants.hpp"
 
     header_guard = "GODOT_CPP_GLOBAL_CONSTANTS_HPP"
@@ -977,9 +917,7 @@ def generate_global_constants(api, output_dir):
     header.append("")
 
     for constant in api["global_constants"]:
-        header.append(
-            f'\tconst int {escape_identifier(constant["name"])} = {constant["value"]};'
-        )
+        header.append(f'\tconst int {escape_identifier(constant["name"])} = {constant["value"]};')
 
     header.append("")
 
@@ -1011,7 +949,9 @@ def generate_utility_functions(api, output_dir):
 
     # Generate header.
 
-    header = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    header = []
+    add_header("utility_functions.hpp", header)
+
     header_filename = include_gen_folder / "utility_functions.hpp"
 
     header_guard = "GODOT_CPP_UTILIY_FUNCTIONS_HPP"
@@ -1036,9 +976,7 @@ def generate_utility_functions(api, output_dir):
 
         # TODO: varargs
         if "arguments" in function:
-            function_signature += make_function_parameters(
-                function["arguments"], include_default=True
-            )
+            function_signature += make_function_parameters(function["arguments"], include_default=True)
         function_signature += ");"
 
         header.append(function_signature)
@@ -1054,7 +992,8 @@ def generate_utility_functions(api, output_dir):
 
     # Generate source.
 
-    source = ["// THIS FILE IS GENERATED. EDITS WILL BE LOST."]
+    source = []
+    add_header("utility_functions.cpp", source)
     source_filename = source_gen_folder / "utility_functions.cpp"
 
     source.append("#include <variant/utility_functions.hpp>")
@@ -1075,15 +1014,11 @@ def generate_utility_functions(api, output_dir):
         if not function_signature.endswith("*"):
             function_signature += " "
 
-        function_signature += (
-            f'UtilityFunctions::{escape_identifier(function["name"])}('
-        )
+        function_signature += f'UtilityFunctions::{escape_identifier(function["name"])}('
 
         # TODO: varargs
         if "arguments" in function:
-            function_signature += make_function_parameters(
-                function["arguments"], include_default=False
-            )
+            function_signature += make_function_parameters(function["arguments"], include_default=False)
         function_signature += ") {"
 
         source.append(function_signature)
@@ -1146,9 +1081,7 @@ def make_function_parameters(parameters, include_default=False, for_builtin=Fals
     signature = []
 
     for par in parameters:
-        parameter = type_for_parameter(
-            par["type"], par["meta"] if "meta" in par else None
-        )
+        parameter = type_for_parameter(par["type"], par["meta"] if "meta" in par else None)
         parameter += escape_identifier(par["name"])
 
         if include_default and "default_value" in par and (not for_builtin or par["type"] != "Variant"):
@@ -1189,9 +1122,7 @@ def get_encoded_arg(arg_name, type_name, type_meta):
     arg_type = correct_type(type_name)
     if is_pod_type(arg_type):
         result.append(f"\t{get_gdnative_type(arg_type)} {name}_encoded;")
-        result.append(
-            f"\tPtrToArg<{correct_type(type_name, type_meta)}>::encode({name}, &{name}_encoded);"
-        )
+        result.append(f"\tPtrToArg<{correct_type(type_name, type_meta)}>::encode({name}, &{name}_encoded);")
         name = f"&{name}_encoded"
     elif is_engine_class(type_name):
         name = f"{name}->_owner"
@@ -1370,6 +1301,54 @@ def get_default_value_for_type(type_name):
     if is_refcounted(type_name):
         return f"Ref<{type_name}>()"
     return "nullptr"
+
+
+header = """\
+/*************************************************************************/
+/*  $filename                                                            */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+"""
+
+
+def add_header(filename, lines):
+    desired_length = len(header.split("\n")[0])
+    pad_spaces = desired_length - 6 - len(filename)
+
+    for num, line in enumerate(header.split("\n")):
+        if num == 1:
+            new_line = f"/*  {filename}{' ' * pad_spaces}*/"
+            lines.append(new_line)
+        else:
+            lines.append(line)
+
+    lines.append("// THIS FILE IS GENERATED. EDITS WILL BE LOST.")
+    lines.append("")
 
 
 # Just for debugging.

@@ -1,5 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+
+header = """\
 /*************************************************************************/
-/*  object.hpp                                                           */
+/*  $filename                                                            */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -27,80 +33,63 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
+"""
 
-#ifndef GODOT_OBJECT_HPP
-#define GODOT_OBJECT_HPP
+fname = sys.argv[1]
 
-#include "defs.hpp"
-#include "variant/variant.hpp"
+# Handle replacing $filename with actual filename and keep alignment
+fsingle = fname.strip()
+if fsingle.find("/") != -1:
+    fsingle = fsingle[fsingle.rfind("/") + 1 :]
+rep_fl = "$filename"
+rep_fi = fsingle
+len_fl = len(rep_fl)
+len_fi = len(rep_fi)
+# Pad with spaces to keep alignment
+if len_fi < len_fl:
+    for x in range(len_fl - len_fi):
+        rep_fi += " "
+elif len_fl < len_fi:
+    for x in range(len_fi - len_fl):
+        rep_fl += " "
+if header.find(rep_fl) != -1:
+    text = header.replace(rep_fl, rep_fi)
+else:
+    text = header.replace("$filename", fsingle)
+text += "\n"
 
-#include <classes/object.hpp>
+# We now have the proper header, so we want to ignore the one in the original file
+# and potentially empty lines and badly formatted lines, while keeping comments that
+# come after the header, and then keep everything non-header unchanged.
+# To do so, we skip empty lines that may be at the top in a first pass.
+# In a second pass, we skip all consecutive comment lines starting with "/*",
+# then we can append the rest (step 2).
 
-#include <godot-headers/gdnative_interface.h>
+fileread = open(fname.strip(), "r")
+line = fileread.readline()
+header_done = False
 
-#define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, m_setter, m_getter)
+while line.strip() == "":  # Skip empty lines at the top
+    line = fileread.readline()
 
-namespace godot {
+if line.find("/**********") == -1:  # Godot header starts this way
+    # Maybe starting with a non-Godot comment, abort header magic
+    header_done = True
 
-struct PropertyInfo {
-	Variant::Type type = Variant::NIL;
-	const char *name = nullptr;
-	const char *class_name = nullptr;
-	uint32_t hint = 0;
-	const char *hint_string = nullptr;
-	uint32_t usage = 7;
+while not header_done:  # Handle header now
+    if line.find("/*") != 0:  # No more starting with a comment
+        header_done = True
+        if line.strip() != "":
+            text += line
+    line = fileread.readline()
 
-	operator GDNativePropertyInfo() {
-		GDNativePropertyInfo info;
-		info.type = type;
-		info.name = name;
-		info.hint = hint;
-		info.hint_string = hint_string;
-		info.class_name = class_name;
-		info.usage = usage;
-		return info;
-	}
+while line != "":  # Dump everything until EOF
+    text += line
+    line = fileread.readline()
 
-	PropertyInfo() = default;
+fileread.close()
 
-	PropertyInfo(Variant::Type p_type, const char *p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const char *p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const char *p_class_name = "") :
-			type(p_type),
-			name(p_name),
-			hint(p_hint),
-			hint_string(p_hint_string),
-			usage(p_usage) {
-		if (hint == PROPERTY_HINT_RESOURCE_TYPE) {
-			class_name = hint_string;
-		} else {
-			class_name = p_class_name;
-		}
-	}
-
-	PropertyInfo(GDNativeVariantType p_type, const char *p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const char *p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const char *p_class_name = "") :
-			PropertyInfo((Variant::Type)p_type, p_name, p_hint, p_hint_string, p_usage, p_class_name) {}
-};
-
-// typedef void GodotObject;
-
-// class Object {
-// protected:
-// 	GodotObject *_owner = nullptr;
-
-// 	static void (*_get_bind_methods())() {
-// 		return &Object::_bind_methods;
-// 	}
-
-// public:
-// 	static void initialize_class();
-// 	static void _bind_methods();
-// };
-
-template <class T>
-T *Object::cast_to(Object *p_object) {
-	// FIXME
-	return (T *)p_object;
-}
-
-} // namespace godot
-
-#endif // ! GODOT_OBJECT_HPP
+# Write
+filewrite = open(fname.strip(), "w")
+filewrite.write(text)
+filewrite.close()

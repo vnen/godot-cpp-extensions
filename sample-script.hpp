@@ -13,30 +13,31 @@
 // #include "src/gen/engine_classes.hpp"
 
 class MyScene : public godot::Node2D {
-    GDCLASS(MyScene, Node2D);
+	GDCLASS(MyScene, Node2D);
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 private:
-    godot::Button *button = nullptr;
-    godot::Label *label = nullptr;
+	godot::Button *button = nullptr;
+	godot::Label *label = nullptr;
 
-    int prop = 0;
+	int prop = 0;
 
 public:
-    void _ready();
-    void on_button_down();
-    void on_button_up();
-    int get_x_from_vec(godot::Vector2i vec);
+	void _ready();
+	void on_button_down();
+	void on_button_up();
+	int get_x_from_vec(const godot::Vector2i &vec);
+	int get_y_from_vec(godot::Vector2i vec);
 
-    int get_prop();
-    void set_prop(int value);
+	int get_prop();
+	void set_prop(int value);
 
-    int method_with_many_params(int par1, int par2, int par3, int par4);
+	int method_with_many_params(int par1, int par2, int par3, int par4);
 
-    MyScene() : Node2D(godot::internal::empty_constructor()) {}
-
+	MyScene() :
+			Node2D(godot::internal::empty_constructor()) {}
 };
 
 #endif // ! SAMPLE_SCRIPT_H

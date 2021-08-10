@@ -45,85 +45,193 @@ CharWideString::~CharWideString() {
 // It's easier to have them written in C++ directly than in a Python script that generates them.
 
 String::String(const char *from) {
-    internal::interface->string_new_with_utf8_chars(ptr, from);
+	internal::interface->string_new_with_utf8_chars(ptr, from);
 }
 
 String::String(const wchar_t *from) {
-    internal::interface->string_new_with_wide_chars(ptr, from);
+	internal::interface->string_new_with_wide_chars(ptr, from);
 }
 
 String::String(const char16_t *from) {
-    internal::interface->string_new_with_utf16_chars(ptr, from);
+	internal::interface->string_new_with_utf16_chars(ptr, from);
 }
 
 String::String(const char32_t *from) {
-    internal::interface->string_new_with_utf32_chars(ptr, from);
+	internal::interface->string_new_with_utf32_chars(ptr, from);
 }
 
 CharString String::utf8() const {
-    int size = internal::interface->string_to_utf8_chars(ptr, nullptr, 0);
-    char *cstr = memnew_arr(char, size + 1);
-    internal::interface->string_to_utf8_chars(ptr, cstr, size + 1);
+	int size = internal::interface->string_to_utf8_chars(ptr, nullptr, 0);
+	char *cstr = memnew_arr(char, size + 1);
+	internal::interface->string_to_utf8_chars(ptr, cstr, size + 1);
 
-    cstr[size] = '\0';
+	cstr[size] = '\0';
 
-    return CharString(cstr, size + 1);
+	return CharString(cstr, size + 1);
 }
 
 CharString String::ascii() const {
-    int size = internal::interface->string_to_latin1_chars(ptr, nullptr, 0);
-    char *cstr = memnew_arr(char, size + 1);
-    internal::interface->string_to_latin1_chars(ptr, cstr, size + 1);
+	int size = internal::interface->string_to_latin1_chars(ptr, nullptr, 0);
+	char *cstr = memnew_arr(char, size + 1);
+	internal::interface->string_to_latin1_chars(ptr, cstr, size + 1);
 
-    cstr[size] = '\0';
+	cstr[size] = '\0';
 
-    return CharString(cstr, size + 1);
+	return CharString(cstr, size + 1);
 }
 
 Char16String String::utf16() const {
-    int size = internal::interface->string_to_utf16_chars(ptr, nullptr, 0);
-    char16_t *cstr = memnew_arr(char16_t, size + 1);
-    internal::interface->string_to_utf16_chars(ptr, cstr, size + 1);
+	int size = internal::interface->string_to_utf16_chars(ptr, nullptr, 0);
+	char16_t *cstr = memnew_arr(char16_t, size + 1);
+	internal::interface->string_to_utf16_chars(ptr, cstr, size + 1);
 
-    cstr[size] = '\0';
+	cstr[size] = '\0';
 
-    return Char16String(cstr, size + 1);
+	return Char16String(cstr, size + 1);
 }
 
 Char32String String::utf32() const {
-    int size = internal::interface->string_to_utf32_chars(ptr, nullptr, 0);
-    char32_t *cstr = memnew_arr(char32_t, size + 1);
-    internal::interface->string_to_utf32_chars(ptr, cstr, size + 1);
+	int size = internal::interface->string_to_utf32_chars(ptr, nullptr, 0);
+	char32_t *cstr = memnew_arr(char32_t, size + 1);
+	internal::interface->string_to_utf32_chars(ptr, cstr, size + 1);
 
-    cstr[size] = '\0';
+	cstr[size] = '\0';
 
-    return Char32String(cstr, size + 1);
+	return Char32String(cstr, size + 1);
 }
 
 CharWideString String::wide_string() const {
-    int size = internal::interface->string_to_wide_chars(ptr, nullptr, 0);
-    wchar_t *cstr = memnew_arr(wchar_t, size + 1);
-    internal::interface->string_to_wide_chars(ptr, cstr, size + 1);
+	int size = internal::interface->string_to_wide_chars(ptr, nullptr, 0);
+	wchar_t *cstr = memnew_arr(wchar_t, size + 1);
+	internal::interface->string_to_wide_chars(ptr, cstr, size + 1);
 
-    cstr[size] = '\0';
+	cstr[size] = '\0';
 
-    return CharWideString(cstr, size + 1);
+	return CharWideString(cstr, size + 1);
 }
 
-StringName::StringName(const char *from) : StringName(String(from)) {}
+String &String::operator=(const char *p_str) {
+	*this = String(p_str);
+	return *this;
+}
 
-StringName::StringName(const wchar_t *from) : StringName(String(from)) {}
+String &String::operator=(const wchar_t *p_str) {
+	*this = String(p_str);
+	return *this;
+}
 
-StringName::StringName(const char16_t *from) : StringName(String(from)) {}
+String &String::operator=(const char16_t *p_str) {
+	*this = String(p_str);
+	return *this;
+}
 
-StringName::StringName(const char32_t *from) : StringName(String(from)) {}
+String &String::operator=(const char32_t *p_str) {
+	*this = String(p_str);
+	return *this;
+}
 
-NodePath::NodePath(const char *from) : NodePath(String(from)) {}
+bool String::operator==(const char *p_str) const {
+	return *this == String(p_str);
+}
 
-NodePath::NodePath(const wchar_t *from) : NodePath(String(from)) {}
+bool String::operator==(const wchar_t *p_str) const {
+	return *this == String(p_str);
+}
 
-NodePath::NodePath(const char16_t *from) : NodePath(String(from)) {}
+bool String::operator==(const char16_t *p_str) const {
+	return *this == String(p_str);
+}
 
-NodePath::NodePath(const char32_t *from) : NodePath(String(from)) {}
+bool String::operator==(const char32_t *p_str) const {
+	return *this == String(p_str);
+}
+
+bool String::operator!=(const char *p_str) const {
+	return *this != String(p_str);
+}
+
+bool String::operator!=(const wchar_t *p_str) const {
+	return *this != String(p_str);
+}
+
+bool String::operator!=(const char16_t *p_str) const {
+	return *this != String(p_str);
+}
+
+bool String::operator!=(const char32_t *p_str) const {
+	return *this != String(p_str);
+}
+
+bool operator==(const char *p_chr, const String &p_str) {
+	return p_str == String(p_chr);
+}
+
+bool operator==(const wchar_t *p_chr, const String &p_str) {
+	return p_str == String(p_chr);
+}
+
+bool operator==(const char16_t *p_chr, const String &p_str) {
+	return p_str == String(p_chr);
+}
+
+bool operator==(const char32_t *p_chr, const String &p_str) {
+	return p_str == String(p_chr);
+}
+
+bool operator!=(const char *p_chr, const String &p_str) {
+	return !(p_str == p_chr);
+}
+
+bool operator!=(const wchar_t *p_chr, const String &p_str) {
+	return !(p_str == p_chr);
+}
+
+bool operator!=(const char16_t *p_chr, const String &p_str) {
+	return !(p_str == p_chr);
+}
+
+bool operator!=(const char32_t *p_chr, const String &p_str) {
+	return !(p_str == p_chr);
+}
+
+String operator+(const char *p_chr, const String &p_str) {
+	return String(p_chr) + p_str;
+}
+
+String operator+(const wchar_t *p_chr, const String &p_str) {
+	return String(p_chr) + p_str;
+}
+
+String operator+(const char16_t *p_chr, const String &p_str) {
+	return String(p_chr) + p_str;
+}
+
+String operator+(const char32_t *p_chr, const String &p_str) {
+	return String(p_chr) + p_str;
+}
+
+StringName::StringName(const char *from) :
+		StringName(String(from)) {}
+
+StringName::StringName(const wchar_t *from) :
+		StringName(String(from)) {}
+
+StringName::StringName(const char16_t *from) :
+		StringName(String(from)) {}
+
+StringName::StringName(const char32_t *from) :
+		StringName(String(from)) {}
+
+NodePath::NodePath(const char *from) :
+		NodePath(String(from)) {}
+
+NodePath::NodePath(const wchar_t *from) :
+		NodePath(String(from)) {}
+
+NodePath::NodePath(const char16_t *from) :
+		NodePath(String(from)) {}
+
+NodePath::NodePath(const char32_t *from) :
+		NodePath(String(from)) {}
 
 } // namespace godot

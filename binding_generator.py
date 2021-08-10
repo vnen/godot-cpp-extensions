@@ -341,7 +341,37 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                         f'\t{correct_type(operator["return_type"])} operator{operator["name"].replace("unary", "")}() const;'
                     )
 
+    # Special cases.
+    if class_name == "String":
+        result.append("String &operator=(const char *p_str);")
+        result.append("String &operator=(const wchar_t *p_str);")
+        result.append("String &operator=(const char16_t *p_str);")
+        result.append("String &operator=(const char32_t *p_str);")
+        result.append("bool operator==(const char *p_str) const;")
+        result.append("bool operator==(const wchar_t *p_str) const;")
+        result.append("bool operator==(const char16_t *p_str) const;")
+        result.append("bool operator==(const char32_t *p_str) const;")
+        result.append("bool operator!=(const char *p_str) const;")
+        result.append("bool operator!=(const wchar_t *p_str) const;")
+        result.append("bool operator!=(const char16_t *p_str) const;")
+        result.append("bool operator!=(const char32_t *p_str) const;")
+
     result.append("};")
+
+    if class_name == "String":
+        result.append("")
+        result.append("bool operator==(const char *p_chr, const String &p_str);")
+        result.append("bool operator==(const wchar_t *p_chr, const String &p_str);")
+        result.append("bool operator==(const char16_t *p_chr, const String &p_str);")
+        result.append("bool operator==(const char32_t *p_chr, const String &p_str);")
+        result.append("bool operator!=(const char *p_chr, const String &p_str);")
+        result.append("bool operator!=(const wchar_t *p_chr, const String &p_str);")
+        result.append("bool operator!=(const char16_t *p_chr, const String &p_str);")
+        result.append("bool operator!=(const char32_t *p_chr, const String &p_str);")
+        result.append("String operator+(const char *p_chr, const String &p_str);")
+        result.append("String operator+(const wchar_t *p_chr, const String &p_str);")
+        result.append("String operator+(const char16_t *p_chr, const String &p_str);")
+        result.append("String operator+(const char32_t *p_chr, const String &p_str);")
 
     result.append("")
     result.append("} // namespace godot")

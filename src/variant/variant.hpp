@@ -19,6 +19,7 @@ class Variant {
 	GDNativeVariantPtr ptr = const_cast<uint8_t (*)[GODOT_CPP_VARIANT_SIZE]>(&opaque);
 
 	friend class GDExtensionBinding;
+	friend class MethodBind;
 
 	static void init_bindings();
 
@@ -112,6 +113,7 @@ public:
 	Variant();
 	Variant(std::nullptr_t n) :
 			Variant() {}
+	Variant(const GDNativeVariantPtr native_ptr);
 	Variant(const Variant &other);
 	Variant(Variant &&other);
 	Variant(bool v);
@@ -126,10 +128,14 @@ public:
 	Variant(float v) :
 			Variant((double)v) {}
 	Variant(const String &v);
-	Variant(const char *v) : Variant(String(v)) {}
-	Variant(const char16_t *v) : Variant(String(v)) {}
-	Variant(const char32_t *v) : Variant(String(v)) {}
-	Variant(const wchar_t *v) : Variant(String(v)) {}
+	Variant(const char *v) :
+			Variant(String(v)) {}
+	Variant(const char16_t *v) :
+			Variant(String(v)) {}
+	Variant(const char32_t *v) :
+			Variant(String(v)) {}
+	Variant(const wchar_t *v) :
+			Variant(String(v)) {}
 	Variant(const Vector2 &v);
 	Variant(const Vector2i &v);
 	Variant(const Rect2 &v);
@@ -207,10 +213,12 @@ public:
 	bool operator!=(const Variant &other) const;
 	bool operator<(const Variant &other) const;
 
+	void operator=(const GDNativeVariantPtr other_ptr);
+
 	void call(const StringName &method, const Variant **args, int argcount, Variant &r_ret, GDNativeCallError &r_error);
 
-	template<class ...Args>
-	Variant call(const StringName &method, Args ...args) {
+	template <class... Args>
+	Variant call(const StringName &method, Args... args) {
 		Variant result;
 		GDNativeCallError error;
 		std::array<const GDNativeVariantPtr, sizeof...(Args)> call_args = { Variant(args)... };
@@ -220,8 +228,8 @@ public:
 
 	static void call_static(Variant::Type type, const StringName &method, const Variant **args, int argcount, Variant &r_ret, GDNativeCallError &r_error);
 
-	template<class ...Args>
-	static Variant call_static(Variant::Type type, const StringName &method, Args ...args) {
+	template <class... Args>
+	static Variant call_static(Variant::Type type, const StringName &method, Args... args) {
 		Variant result;
 		GDNativeCallError error;
 		std::array<const GDNativeVariantPtr, sizeof...(Args)> call_args = { Variant(args)... };

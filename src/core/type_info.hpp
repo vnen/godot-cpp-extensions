@@ -17,40 +17,40 @@ namespace godot {
 template <class T, typename = void>
 struct GetTypeInfo;
 
-#define MAKE_TYPE_INFO(m_type, m_var_type)                                                                                     \
-	template <>                                                                                                                \
-	struct GetTypeInfo<m_type> {                                                                                               \
+#define MAKE_TYPE_INFO(m_type, m_var_type)                                                                                         \
+	template <>                                                                                                                    \
+	struct GetTypeInfo<m_type> {                                                                                                   \
 		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                                                            \
 		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE; \
-		static inline GDNativePropertyInfo get_class_info() {                                                                  \
-			return PropertyInfo(VARIANT_TYPE, "");                                                                             \
-		}                                                                                                                      \
-	};                                                                                                                         \
-	template <>                                                                                                                \
-	struct GetTypeInfo<const m_type &> {                                                                                       \
+		static inline GDNativePropertyInfo get_class_info() {                                                                      \
+			return PropertyInfo(VARIANT_TYPE, "");                                                                                 \
+		}                                                                                                                          \
+	};                                                                                                                             \
+	template <>                                                                                                                    \
+	struct GetTypeInfo<const m_type &> {                                                                                           \
 		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                                                            \
 		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE; \
-		static inline GDNativePropertyInfo get_class_info() {                                                                  \
-			return PropertyInfo(VARIANT_TYPE, "");                                                                             \
-		}                                                                                                                      \
+		static inline GDNativePropertyInfo get_class_info() {                                                                      \
+			return PropertyInfo(VARIANT_TYPE, "");                                                                                 \
+		}                                                                                                                          \
 	};
 
-#define MAKE_TYPE_INFO_WITH_META(m_type, m_var_type, m_metadata)                         \
-	template <>                                                                          \
-	struct GetTypeInfo<m_type> {                                                         \
+#define MAKE_TYPE_INFO_WITH_META(m_type, m_var_type, m_metadata)                             \
+	template <>                                                                              \
+	struct GetTypeInfo<m_type> {                                                             \
 		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                      \
 		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = m_metadata; \
-		static inline GDNativePropertyInfo get_class_info() {                            \
-			return PropertyInfo(VARIANT_TYPE, "");                                       \
-		}                                                                                \
-	};                                                                                   \
-	template <>                                                                          \
-	struct GetTypeInfo<const m_type &> {                                                 \
+		static inline GDNativePropertyInfo get_class_info() {                                \
+			return PropertyInfo(VARIANT_TYPE, "");                                           \
+		}                                                                                    \
+	};                                                                                       \
+	template <>                                                                              \
+	struct GetTypeInfo<const m_type &> {                                                     \
 		static constexpr GDNativeVariantType VARIANT_TYPE = m_var_type;                      \
 		static constexpr GDNativeExtensionClassMethodArgumentMetadata METADATA = m_metadata; \
-		static inline GDNativePropertyInfo get_class_info() {                            \
-			return PropertyInfo(VARIANT_TYPE, "");                                       \
-		}                                                                                \
+		static inline GDNativePropertyInfo get_class_info() {                                \
+			return PropertyInfo(VARIANT_TYPE, "");                                           \
+		}                                                                                    \
 	};
 
 MAKE_TYPE_INFO(bool, GDNATIVE_VARIANT_TYPE_BOOL)
@@ -116,6 +116,22 @@ struct GetTypeInfo<const Variant &> {
 		return PropertyInfo(GDNATIVE_VARIANT_TYPE_NIL, "", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT);
 	}
 };
+
+#define MAKE_ENUM_TYPE_INFO(m_enum)                 \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_enum)       \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_enum const) \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_enum &)     \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, const m_enum &)
+
+template <typename T>
+inline StringName __constant_get_enum_name(T param, const String &p_constant) {
+	if (GetTypeInfo<T>::VARIANT_TYPE == Variant::NIL) {
+		ERR_PRINT("Missing VARIANT_ENUM_CAST for constant's enum: " + p_constant);
+	}
+	return GetTypeInfo<T>::get_class_info().class_name;
+}
+
+#define CLASS_INFO(m_type) (GetTypeInfo<m_type *>::get_class_info())
 
 } // namespace godot
 

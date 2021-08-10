@@ -24,6 +24,7 @@ user_sources = [
 defines = [
     '-DDEBUG_ENABLED',
     '-DDEBUG_METHODS_ENABLED',
+    # '-DTYPED_METHOD_BIND',
 ]
 
 compiler_args = [

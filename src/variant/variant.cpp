@@ -55,6 +55,10 @@ Variant::Variant() {
 	internal::interface->variant_new_nil(ptr);
 }
 
+Variant::Variant(const GDNativeVariantPtr native_ptr) {
+	internal::interface->variant_new_copy(ptr, native_ptr);
+}
+
 Variant::Variant(const Variant &other) {
 	internal::interface->variant_new_copy(ptr, other.ptr);
 }
@@ -464,6 +468,11 @@ bool Variant::operator<(const Variant &other) const {
 	Variant result;
 	evaluate(OP_LESS, *this, other, result, valid);
 	return result.operator bool();
+}
+
+void Variant::operator=(const GDNativeVariantPtr other_ptr) {
+	internal::interface->variant_destroy(ptr);
+	internal::interface->variant_new_copy(ptr, other_ptr);
 }
 
 void Variant::call(const StringName &method, const Variant **args, int argcount, Variant &r_ret, GDNativeCallError &r_error) {

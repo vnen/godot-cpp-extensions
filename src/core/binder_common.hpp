@@ -3,10 +3,116 @@
 
 #include <godot-headers/gdnative_interface.h>
 
-#include "method_ptrcall.hpp"
-#include "type_info.hpp"
+#include <core/method_ptrcall.hpp>
+#include <core/type_info.hpp>
+
+#include <array>
+#include <vector>
 
 namespace godot {
+
+#define VARIANT_ENUM_CAST(m_enum)                                            \
+	MAKE_ENUM_TYPE_INFO(m_enum)                                              \
+	template <>                                                              \
+	struct VariantCaster<m_enum> {                                           \
+		static _FORCE_INLINE_ m_enum cast(const Variant &p_variant) {        \
+			return (m_enum)p_variant.operator int64_t();                     \
+		}                                                                    \
+	};                                                                       \
+	template <>                                                              \
+	struct PtrToArg<m_enum> {                                                \
+		_FORCE_INLINE_ static m_enum convert(const void *p_ptr) {            \
+			return m_enum(*reinterpret_cast<const int64_t *>(p_ptr));        \
+		}                                                                    \
+		typedef int64_t EncodeT;                                             \
+		_FORCE_INLINE_ static void encode(m_enum p_val, const void *p_ptr) { \
+			*(int64_t *)p_ptr = p_val;                                       \
+		}                                                                    \
+	};
+template <class T>
+struct VariantCaster {
+	static _FORCE_INLINE_ T cast(const Variant &p_variant) {
+		return p_variant;
+	}
+};
+
+template <class T>
+struct VariantCaster<T &> {
+	static _FORCE_INLINE_ T cast(const Variant &p_variant) {
+		return p_variant;
+	}
+};
+
+template <class T>
+struct VariantCaster<const T &> {
+	static _FORCE_INLINE_ T cast(const Variant &p_variant) {
+		return p_variant;
+	}
+};
+
+template <typename T>
+struct VariantObjectClassChecker {
+	static _FORCE_INLINE_ bool check(const Variant &p_variant) {
+		return true;
+	}
+};
+
+template <typename T>
+class Ref;
+
+template <typename T>
+struct VariantObjectClassChecker<const Ref<T> &> {
+	static _FORCE_INLINE_ bool check(const Variant &p_variant) {
+		Object *obj = p_variant;
+		const Ref<T> node = p_variant;
+		return node.ptr() || !obj;
+	}
+};
+
+template <class T>
+struct VariantCasterAndValidate {
+	static _FORCE_INLINE_ T cast(const Variant **p_args, uint32_t p_arg_idx, GDNativeCallError &r_error) {
+		GDNativeVariantType argtype = GetTypeInfo<T>::VARIANT_TYPE;
+		if (!internal::interface->variant_can_convert_strict(static_cast<GDNativeVariantType>(p_args[p_arg_idx]->get_type()), argtype) ||
+				!VariantObjectClassChecker<T>::check(p_args[p_arg_idx])) {
+			r_error.error = GDNATIVE_CALL_ERROR_INVALID_ARGUMENT;
+			r_error.argument = p_arg_idx;
+			r_error.expected = argtype;
+		}
+
+		return VariantCaster<T>::cast(*p_args[p_arg_idx]);
+	}
+};
+
+template <class T>
+struct VariantCasterAndValidate<T &> {
+	static _FORCE_INLINE_ T cast(const Variant **p_args, uint32_t p_arg_idx, GDNativeCallError &r_error) {
+		GDNativeVariantType argtype = GetTypeInfo<T>::VARIANT_TYPE;
+		if (!internal::interface->variant_can_convert_strict(static_cast<GDNativeVariantType>(p_args[p_arg_idx]->get_type()), argtype) ||
+				!VariantObjectClassChecker<T>::check(p_args[p_arg_idx])) {
+			r_error.error = GDNATIVE_CALL_ERROR_INVALID_ARGUMENT;
+			r_error.argument = p_arg_idx;
+			r_error.expected = argtype;
+		}
+
+		return VariantCaster<T>::cast(*p_args[p_arg_idx]);
+	}
+};
+
+template <class T>
+struct VariantCasterAndValidate<const T &> {
+	static _FORCE_INLINE_ T cast(const Variant **p_args, uint32_t p_arg_idx, GDNativeCallError &r_error) {
+		GDNativeVariantType argtype = GetTypeInfo<T>::VARIANT_TYPE;
+		if (!internal::interface->variant_can_convert_strict(static_cast<GDNativeVariantType>(p_args[p_arg_idx]->get_type()), argtype) ||
+				!VariantObjectClassChecker<T>::check(p_args[p_arg_idx])) {
+			r_error.error = GDNATIVE_CALL_ERROR_INVALID_ARGUMENT;
+			r_error.argument = p_arg_idx;
+			r_error.expected = argtype;
+		}
+
+		return VariantCaster<T>::cast(*p_args[p_arg_idx]);
+	}
+};
 
 template <class T, class... P, size_t... Is>
 void call_with_ptr_args_helper(T *p_instance, void (T::*p_method)(P...), const GDNativeTypePtr *p_args, IndexSequence<Is...>) {
@@ -46,6 +152,193 @@ void call_with_ptr_args_ret(T *p_instance, R (T::*p_method)(P...), const GDNativ
 template <class T, class R, class... P>
 void call_with_ptr_args_retc(T *p_instance, R (T::*p_method)(P...) const, const GDNativeTypePtr *p_args, void *r_ret) {
 	call_with_ptr_args_retc_helper<T, R, P...>(p_instance, p_method, p_args, r_ret, BuildIndexSequence<sizeof...(P)>{});
+}
+
+template <class T, class... P, size_t... Is>
+void call_with_variant_args_helper(T *p_instance, void (T::*p_method)(P...), const Variant **p_args, GDNativeCallError &r_error, IndexSequence<Is...>) {
+	r_error.error = GDNATIVE_CALL_OK;
+
+#ifdef DEBUG_METHODS_ENABLED
+	(p_instance->*p_method)(VariantCasterAndValidate<P>::cast(p_args, Is, r_error)...);
+#else
+	(p_instance->*p_method)(VariantCaster<P>::cast(*p_args[Is])...);
+#endif
+	(void)(p_args); // Avoid warning.
+}
+
+template <class T, class... P, size_t... Is>
+void call_with_variant_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const Variant **p_args, GDNativeCallError &r_error, IndexSequence<Is...>) {
+	r_error.error = GDNATIVE_CALL_OK;
+
+#ifdef DEBUG_METHODS_ENABLED
+	(p_instance->*p_method)(VariantCasterAndValidate<P>::cast(p_args, Is, r_error)...);
+#else
+	(p_instance->*p_method)(VariantCaster<P>::cast(*p_args[Is])...);
+#endif
+	(void)(p_args); // Avoid warning.
+}
+
+template <class T, class R, class... P, size_t... Is>
+void call_with_variant_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const Variant **p_args, Variant &r_ret, GDNativeCallError &r_error, IndexSequence<Is...>) {
+	r_error.error = GDNATIVE_CALL_OK;
+
+#ifdef DEBUG_METHODS_ENABLED
+	r_ret = (p_instance->*p_method)(VariantCasterAndValidate<P>::cast(p_args, Is, r_error)...);
+#else
+	r_ret = (p_instance->*p_method)(VariantCaster<P>::cast(*p_args[Is])...);
+#endif
+}
+
+template <class T, class R, class... P, size_t... Is>
+void call_with_variant_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const Variant **p_args, Variant &r_ret, GDNativeCallError &r_error, IndexSequence<Is...>) {
+	r_error.error = GDNATIVE_CALL_OK;
+
+#ifdef DEBUG_METHODS_ENABLED
+	r_ret = (p_instance->*p_method)(VariantCasterAndValidate<P>::cast(p_args, Is, r_error)...);
+#else
+	r_ret = (p_instance->*p_method)(VariantCaster<P>::cast(*p_args[Is])...);
+#endif
+	(void)p_args;
+}
+
+template <class T, class... P>
+void call_with_variant_args_dv(T *p_instance, void (T::*p_method)(P...), const GDNativeVariantPtr *p_args, int p_argcount, GDNativeCallError &r_error, const std::vector<Variant> &default_values) {
+#ifdef DEBUG_ENABLED
+	if ((size_t)p_argcount > sizeof...(P)) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_MANY_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	int32_t missing = (int32_t)sizeof...(P) - (int32_t)p_argcount;
+
+	int32_t dvs = default_values.size();
+#ifdef DEBUG_ENABLED
+	if (missing > dvs) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_FEW_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	Variant args[sizeof...(P) == 0 ? 1 : sizeof...(P)]; // Avoid zero sized array.
+	std::array<const Variant *, sizeof...(P)> argsp;
+	for (int32_t i = 0; i < (int32_t)sizeof...(P); i++) {
+		if (i < p_argcount) {
+			args[i] = p_args[i];
+		} else {
+			args[i] = default_values[i - p_argcount + (dvs - missing)];
+		}
+		argsp[i] = &args[i];
+	}
+
+	call_with_variant_args_helper(p_instance, p_method, argsp.data(), r_error, BuildIndexSequence<sizeof...(P)>{});
+}
+
+template <class T, class... P>
+void call_with_variant_argsc_dv(T *p_instance, void (T::*p_method)(P...) const, const GDNativeVariantPtr *p_args, int p_argcount, GDNativeCallError &r_error, const std::vector<Variant> &default_values) {
+#ifdef DEBUG_ENABLED
+	if ((size_t)p_argcount > sizeof...(P)) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_MANY_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	int32_t missing = (int32_t)sizeof...(P) - (int32_t)p_argcount;
+
+	int32_t dvs = default_values.size();
+#ifdef DEBUG_ENABLED
+	if (missing > dvs) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_FEW_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	Variant args[sizeof...(P) == 0 ? 1 : sizeof...(P)]; // Avoid zero sized array.
+	std::array<const Variant *, sizeof...(P)> argsp;
+	for (int32_t i = 0; i < (int32_t)sizeof...(P); i++) {
+		if (i < p_argcount) {
+			args[i] = p_args[i];
+		} else {
+			args[i] = default_values[i - p_argcount + (dvs - missing)];
+		}
+		argsp[i] = &args[i];
+	}
+
+	call_with_variant_argsc_helper(p_instance, p_method, args.data(), r_error, BuildIndexSequence<sizeof...(P)>{});
+}
+
+template <class T, class R, class... P>
+void call_with_variant_args_ret_dv(T *p_instance, R (T::*p_method)(P...), const GDNativeVariantPtr *p_args, int p_argcount, Variant &r_ret, GDNativeCallError &r_error, const std::vector<Variant> &default_values) {
+#ifdef DEBUG_ENABLED
+	if ((size_t)p_argcount > sizeof...(P)) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_MANY_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	int32_t missing = (int32_t)sizeof...(P) - (int32_t)p_argcount;
+
+	int32_t dvs = default_values.size();
+#ifdef DEBUG_ENABLED
+	if (missing > dvs) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_FEW_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	Variant args[sizeof...(P) == 0 ? 1 : sizeof...(P)]; // Avoid zero sized array.
+	std::array<const Variant *, sizeof...(P)> argsp;
+	for (int32_t i = 0; i < (int32_t)sizeof...(P); i++) {
+		if (i < p_argcount) {
+			args[i] = p_args[i];
+		} else {
+			args[i] = default_values[i - p_argcount + (dvs - missing)];
+		}
+		argsp[i] = &args[i];
+	}
+
+	call_with_variant_args_ret_helper(p_instance, p_method, argsp.data(), r_ret, r_error, BuildIndexSequence<sizeof...(P)>{});
+}
+
+template <class T, class R, class... P>
+void call_with_variant_args_retc_dv(T *p_instance, R (T::*p_method)(P...) const, const GDNativeVariantPtr *p_args, int p_argcount, Variant &r_ret, GDNativeCallError &r_error, const std::vector<Variant> &default_values) {
+#ifdef DEBUG_ENABLED
+	if ((size_t)p_argcount > sizeof...(P)) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_MANY_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	int32_t missing = (int32_t)sizeof...(P) - (int32_t)p_argcount;
+
+	int32_t dvs = default_values.size();
+#ifdef DEBUG_ENABLED
+	if (missing > dvs) {
+		r_error.error = GDNATIVE_CALL_ERROR_TOO_FEW_ARGUMENTS;
+		r_error.argument = sizeof...(P);
+		return;
+	}
+#endif
+
+	Variant args[sizeof...(P) == 0 ? 1 : sizeof...(P)]; // Avoid zero sized array.
+	std::array<const Variant *, sizeof...(P)> argsp;
+	for (int32_t i = 0; i < (int32_t)sizeof...(P); i++) {
+		if (i < p_argcount) {
+			args[i] = p_args[i];
+		} else {
+			args[i] = default_values[i - p_argcount + (dvs - missing)];
+		}
+		argsp[i] = &args[i];
+	}
+
+	call_with_variant_args_retc_helper(p_instance, p_method, reinterpret_cast<const Variant **>(&args), r_ret, r_error, BuildIndexSequence<sizeof...(P)>{});
 }
 
 // GCC raises "parameter 'p_args' set but not used" when P = {},
@@ -118,6 +411,6 @@ GDNativeExtensionClassMethodArgumentMetadata call_get_argument_metadata(int p_ar
 #pragma GCC diagnostic pop
 #endif
 
-}
+} // namespace godot
 
 #endif // ! GODOT_CPP_BINDER_COMMON_HPP

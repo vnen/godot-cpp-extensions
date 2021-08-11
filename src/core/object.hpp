@@ -36,6 +36,8 @@
 
 #include <classes/object.hpp>
 
+#include <godot.hpp>
+
 #include <godot-headers/gdnative_interface.h>
 
 #define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, m_setter, m_getter)
@@ -80,25 +82,13 @@ struct PropertyInfo {
 			PropertyInfo((Variant::Type)p_type, p_name, p_hint, p_hint_string, p_usage, p_class_name) {}
 };
 
-// typedef void GodotObject;
-
-// class Object {
-// protected:
-// 	GodotObject *_owner = nullptr;
-
-// 	static void (*_get_bind_methods())() {
-// 		return &Object::_bind_methods;
-// 	}
-
-// public:
-// 	static void initialize_class();
-// 	static void _bind_methods();
-// };
-
 template <class T>
 T *Object::cast_to(Object *p_object) {
-	// FIXME
-	return (T *)p_object;
+	GDNativeObjectPtr casted = internal::interface->object_cast_to(p_object->_owner, internal::interface->classdb_get_class_tag(T::get_class_static()));
+	if (casted == nullptr) {
+		return nullptr;
+	}
+	return reinterpret_cast<T *>(internal::interface->object_get_instance_binding(casted, internal::token, &T::___binding_callbacks));
 }
 
 } // namespace godot

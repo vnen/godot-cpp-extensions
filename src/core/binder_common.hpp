@@ -298,7 +298,7 @@ void call_with_variant_argsc_dv(T *p_instance, void (T::*p_method)(P...) const, 
 		argsp[i] = &args[i];
 	}
 
-	call_with_variant_argsc_helper(p_instance, p_method, args.data(), r_error, BuildIndexSequence<sizeof...(P)>{});
+	call_with_variant_argsc_helper(p_instance, p_method, argsp.data(), r_error, BuildIndexSequence<sizeof...(P)>{});
 }
 
 template <class T, class R, class... P>
@@ -368,7 +368,7 @@ void call_with_variant_args_retc_dv(T *p_instance, R (T::*p_method)(P...) const,
 		argsp[i] = &args[i];
 	}
 
-	call_with_variant_args_retc_helper(p_instance, p_method, reinterpret_cast<const Variant **>(&args), r_ret, r_error, BuildIndexSequence<sizeof...(P)>{});
+	call_with_variant_args_retc_helper(p_instance, p_method, argsp.data(), r_ret, r_error, BuildIndexSequence<sizeof...(P)>{});
 }
 
 // GCC raises "parameter 'p_args' set but not used" when P = {},

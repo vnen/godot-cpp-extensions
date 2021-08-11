@@ -57,8 +57,9 @@ private:
 public:
 	void _ready();
 	void on_button_down();
-	void on_button_up();
-	int get_x_from_vec(const godot::Vector2i &vec);
+	void on_button_up() const;
+	int get_x_from_vec(const godot::Vector2i &vec) const;
+	int get_x_from_vec_no_const(const godot::Vector2i &vec);
 	int get_y_from_vec(godot::Vector2i vec);
 
 	int get_prop();

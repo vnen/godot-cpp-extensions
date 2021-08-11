@@ -48,6 +48,7 @@ void MyScene::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("on_button_down"), &MyScene::on_button_down);
 	ClassDB::bind_method(D_METHOD("on_button_up"), &MyScene::on_button_up);
 	ClassDB::bind_method(D_METHOD("get_x_from_vec", "vec"), &MyScene::get_x_from_vec);
+	ClassDB::bind_method(D_METHOD("get_x_from_vec_no_const", "vec"), &MyScene::get_x_from_vec_no_const);
 	ClassDB::bind_method(D_METHOD("get_y_from_vec", "vec"), &MyScene::get_y_from_vec);
 
 	ClassDB::bind_method(D_METHOD("set_prop", "prop"), &MyScene::set_prop);
@@ -89,11 +90,15 @@ void MyScene::on_button_down() {
 	std::cout << "Button down called." << std::endl;
 }
 
-void MyScene::on_button_up() {
+void MyScene::on_button_up() const {
 	label->set_text("Button is not pressed");
 }
 
-int MyScene::get_x_from_vec(const Vector2i &vec) {
+int MyScene::get_x_from_vec(const Vector2i &vec) const {
+	return vec.get_x();
+}
+
+int MyScene::get_x_from_vec_no_const(const Vector2i &vec) {
 	return vec.get_x();
 }
 

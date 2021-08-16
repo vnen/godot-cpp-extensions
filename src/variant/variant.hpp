@@ -36,8 +36,6 @@
 #include <variant/builtin_types.hpp>
 #include <variant/variant_size.hpp>
 
-#include <classes/object.hpp>
-
 #include <godot-headers/gdnative_interface.h>
 
 #include <array>
@@ -236,6 +234,9 @@ public:
 	operator PackedVector2Array() const;
 	operator PackedVector3Array() const;
 	operator PackedColorArray() const;
+
+	operator const GDNativeVariantPtr() const;
+	operator GDNativeVariantPtr();
 
 	Variant &operator=(const Variant &other);
 	Variant &operator=(Variant &&other);

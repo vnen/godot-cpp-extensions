@@ -280,6 +280,11 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
     if "methods" in builtin_api:
         for method in builtin_api["methods"]:
             method_list.append(method["name"])
+
+            vararg = method["is_vararg"]
+            if vararg:
+                result.append("\ttemplate<class... Args>")
+
             method_signature = "\t"
             if "return_type" in method:
                 method_signature += f'{correct_type(method["return_type"])} '
@@ -287,10 +292,15 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                 method_signature += "void "
 
             method_signature += f'{method["name"]}('
+
+            method_arguments = []
             if "arguments" in method:
-                method_signature += make_function_parameters(
-                    method["arguments"], include_default=True, for_builtin=True
-                )
+                method_arguments = method["arguments"]
+
+            method_signature += make_function_parameters(
+                method_arguments, include_default=True, for_builtin=True, is_vararg=vararg
+            )
+
             method_signature += ")"
             if method["is_const"]:
                 method_signature += " const"
@@ -502,6 +512,11 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
     if "methods" in builtin_api:
         for method in builtin_api["methods"]:
             method_list.append(method["name"])
+
+            if "is_vararg" in method and method["is_vararg"]:
+                # Done in the header because of the template.
+                continue
+
             method_signature = ""
             if "return_type" in method:
                 method_signature += f'{correct_type(method["return_type"])} '
@@ -705,7 +720,6 @@ def generate_engine_class_header(class_api, used_classes, fully_used_classes, us
     inherits = class_api["inherits"] if "inherits" in class_api else "Wrapped"
     result.append(f"class {class_name} : public {inherits} {{")
 
-    # if class_name != "Object":
     result.append(f"\tGDNATIVE_CLASS({class_name}, {inherits})")
     result.append("")
 
@@ -719,6 +733,8 @@ def generate_engine_class_header(class_api, used_classes, fully_used_classes, us
             result.append("\t};")
             result.append("")
 
+    has_vararg_method = False
+
     if "methods" in class_api:
         for method in class_api["methods"]:
             if method["is_virtual"]:
@@ -726,6 +742,12 @@ def generate_engine_class_header(class_api, used_classes, fully_used_classes, us
                 continue
 
             method_signature = "\t"
+
+            vararg = "is_vararg" in method and method["is_vararg"]
+            if vararg:
+                has_vararg_method = True
+                method_signature += "private: "
+
             if "return_value" in method:
                 method_signature += correct_type(
                     method["return_value"]["type"],
@@ -737,13 +759,23 @@ def generate_engine_class_header(class_api, used_classes, fully_used_classes, us
             if not method_signature.endswith("*"):
                 method_signature += " "
 
-            if use_template_get_node and class_name == "Node" and method["name"] == "get_node":
-                method_signature += "get_node_internal("
-            else:
-                method_signature += f'{escape_identifier(method["name"])}('
+            method_signature += f'{escape_identifier(method["name"])}'
 
+            if vararg or (use_template_get_node and class_name == "Node" and method["name"] == "get_node"):
+                method_signature += "_internal"
+
+            method_signature += "("
+
+            method_arguments = []
             if "arguments" in method:
-                method_signature += make_function_parameters(method["arguments"], include_default=True)
+                method_arguments = method["arguments"]
+
+            if not vararg:
+                method_signature += make_function_parameters(
+                    method_arguments, include_default=True, is_vararg=vararg, for_builtin=False
+                )
+            else:
+                method_signature += "const Variant **args, GDNativeInt arg_count"
 
             method_signature += ")"
 
@@ -752,6 +784,63 @@ def generate_engine_class_header(class_api, used_classes, fully_used_classes, us
 
             method_signature += ";"
             result.append(method_signature)
+
+            if vararg:
+                # Add templated version.
+                method_signature = "\tpublic: template<class... Args> "
+
+                if "return_value" in method:
+                    method_signature += correct_type(
+                        method["return_value"]["type"],
+                        method["return_value"]["meta"] if "meta" in method["return_value"] else None,
+                    )
+                else:
+                    method_signature += "void"
+
+                if not method_signature.endswith("*"):
+                    method_signature += " "
+
+                method_signature += f'{escape_identifier(method["name"])}'
+
+                method_arguments = []
+                if "arguments" in method:
+                    method_arguments = method["arguments"]
+
+                method_signature += "("
+
+                method_signature += make_function_parameters(method_arguments, include_default=True, is_vararg=vararg)
+
+                method_signature += ")"
+
+                if method["is_const"]:
+                    method_signature += " const"
+
+                method_signature += " {"
+                result.append(method_signature)
+
+                args_array = f"\t\tstd::array<Variant, {len(method_arguments)} + sizeof...(Args)> variant_args {{ "
+                for argument in method_arguments:
+                    if argument["type"] == "Variant":
+                        args_array += argument["name"]
+                    else:
+                        args_array += f'Variant({argument["name"]})'
+                    args_array += ", "
+
+                args_array += "Variant(args)... };"
+                result.append(args_array)
+                result.append(f"\t\tstd::array<const Variant *, {len(method_arguments)} + sizeof...(Args)> call_args;")
+                result.append("\t\tfor(size_t i = 0; i < variant_args.size(); i++) {")
+                result.append("\t\t\tcall_args[i] = &variant_args[i];")
+                result.append("\t\t}")
+
+                call_line = "\t\t"
+
+                if "return_value" in method and method["return_value"]["type"] != "void":
+                    call_line += "return "
+
+                call_line += f'{escape_identifier(method["name"])}_internal(call_args.data(), variant_args.size());'
+                result.append(call_line)
+                result.append("\t}")
 
     # Special cases.
     if class_name == "Object":
@@ -769,6 +858,7 @@ def generate_engine_class_header(class_api, used_classes, fully_used_classes, us
     result.append("")
     result.append("};")
     result.append("")
+
     result.append("} // namespace godot")
 
     result.append(f"#endif // ! {header_guard}")
@@ -806,6 +896,8 @@ def generate_engine_class_source(class_api, used_classes, fully_used_classes, us
                 # TODO: See how to bind virtual methods (if they are even needed).
                 continue
 
+            vararg = "is_vararg" in method and method["is_vararg"]
+
             # Method signature.
             method_signature = ""
             if "return_value" in method:
@@ -819,13 +911,23 @@ def generate_engine_class_source(class_api, used_classes, fully_used_classes, us
             if not method_signature.endswith("*"):
                 method_signature += " "
 
-            if use_template_get_node and class_name == "Node" and method["name"] == "get_node":
-                method_signature += "Node::get_node_internal("
-            else:
-                method_signature += f'{class_name}::{escape_identifier(method["name"])}('
+            method_signature += f'{class_name}::{escape_identifier(method["name"])}'
 
+            if vararg or (use_template_get_node and class_name == "Node" and method["name"] == "get_node"):
+                method_signature += "_internal"
+
+            method_signature += "("
+
+            method_arguments = []
             if "arguments" in method:
-                method_signature += make_function_parameters(method["arguments"], include_default=False)
+                method_arguments = method["arguments"]
+
+            if not vararg:
+                method_signature += make_function_parameters(
+                    method_arguments, include_default=False, is_vararg=vararg, for_builtin=False
+                )
+            else:
+                method_signature += "const Variant **args, GDNativeInt arg_count"
 
             method_signature += ")"
 
@@ -840,45 +942,59 @@ def generate_engine_class_source(class_api, used_classes, fully_used_classes, us
                 f'\tstatic GDNativeMethodBindPtr ___method_bind = internal::interface->classdb_get_method_bind("{class_name}", "{method["name"]}", {method["hash"]});'
             )
             method_call = "\t"
-            is_ref = False
-            if "return_value" in method and method["return_value"]["type"] != "void":
-                return_type = method["return_value"]["type"]
-                meta_type = method["return_value"]["meta"] if "meta" in method["return_value"] else None
-                result.append(f"\tCHECK_METHOD_BIND_RET(___method_bind, {get_default_value_for_type(return_type)});")
-                if is_pod_type(return_type) or is_variant(return_type) or is_enum(return_type):
-                    method_call += f"return internal::_call_native_mb_ret<{correct_type(return_type, meta_type)}>(___method_bind, _owner"
-                elif is_refcounted(return_type):
-                    method_call += f"return Ref<{return_type}>::___internal_constructor(internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
-                    is_ref = True
-                else:
-                    method_call += f"return ({correct_type(return_type)})internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
+            has_return = "return_value" in method and method["return_value"]["type"] != "void"
+
+            if has_return:
+                result.append(
+                    f'\tCHECK_METHOD_BIND_RET(___method_bind, {get_default_value_for_type(method["return_value"]["type"])});'
+                )
             else:
                 result.append(f"\tCHECK_METHOD_BIND(___method_bind);")
-                method_call += f"internal::_call_native_mb_no_ret(___method_bind, _owner"
 
-            if "arguments" in method:
-                method_call += ", "
-                arguments = []
-                for argument in method["arguments"]:
-                    (encode, arg_name) = get_encoded_arg(
-                        argument["name"],
-                        argument["type"],
-                        argument["meta"] if "meta" in argument else None,
-                    )
-                    result += encode
-                    arguments.append(arg_name)
-                method_call += ", ".join(arguments)
+            is_ref = False
+            if not vararg:
+                if has_return:
+                    return_type = method["return_value"]["type"]
+                    meta_type = method["return_value"]["meta"] if "meta" in method["return_value"] else None
+                    if is_pod_type(return_type) or is_variant(return_type) or is_enum(return_type):
+                        method_call += f"return internal::_call_native_mb_ret<{correct_type(return_type, meta_type)}>(___method_bind, _owner"
+                    elif is_refcounted(return_type):
+                        method_call += f"return Ref<{return_type}>::___internal_constructor(internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
+                        is_ref = True
+                    else:
+                        method_call += f"return ({correct_type(return_type)})internal::_call_native_mb_ret_obj<{class_name}>(___method_bind, _owner"
+                else:
+                    method_call += f"internal::_call_native_mb_no_ret(___method_bind, _owner"
+
+                if "arguments" in method:
+                    method_call += ", "
+                    arguments = []
+                    for argument in method["arguments"]:
+                        (encode, arg_name) = get_encoded_arg(
+                            argument["name"],
+                            argument["type"],
+                            argument["meta"] if "meta" in argument else None,
+                        )
+                        result += encode
+                        arguments.append(arg_name)
+                    method_call += ", ".join(arguments)
+            else:  # vararg.
+                result.append("\tGDNativeCallError error;")
+                result.append("\tVariant ret;")
+                method_call += "internal::interface->object_method_bind_call(___method_bind, _owner, (const GDNativeVariantPtr *)args, arg_count, ret, &error"
 
             if is_ref:
                 method_call += ")"  # Close Ref<> constructor.
             method_call += ");"
             result.append(method_call)
 
+            if vararg and ("return_value" in method and method["return_value"]["type"] != "void"):
+                result.append("\treturn ret;")
+
             result.append("}")
             result.append("")
 
     # Constructor.
-    result.append("")
     result.append(f"{class_name}::{class_name}() : {inherits}(godot::internal::empty_constructor()) {{")
     result.append(
         f'\tstatic GDNativeClassConstructor constructor = internal::interface->classdb_get_constructor("{class_name}");'
@@ -954,11 +1070,14 @@ def generate_utility_functions(api, output_dir):
 
     header_filename = include_gen_folder / "utility_functions.hpp"
 
-    header_guard = "GODOT_CPP_UTILIY_FUNCTIONS_HPP"
+    header_guard = "GODOT_CPP_UTILITY_FUNCTIONS_HPP"
     header.append(f"#ifndef {header_guard}")
     header.append(f"#define {header_guard}")
     header.append("")
     header.append("#include <variant/builtin_types.hpp>")
+    header.append("#include <variant/variant.hpp>")
+    header.append("")
+    header.append("#include <array>")
     header.append("")
     header.append("namespace godot {")
     header.append("")
@@ -966,20 +1085,88 @@ def generate_utility_functions(api, output_dir):
     header.append("public:")
 
     for function in api["utility_functions"]:
-        function_signature = "\tstatic "
+        vararg = "is_vararg" in function and function["is_vararg"]
+
+        function_signature = "\t"
+        if vararg:
+            function_signature += "private: "
+        function_signature += "static "
+
         if "return_type" in function:
-            function_signature += f'{correct_type(function["return_type"])} '
+            if not vararg:
+                function_signature += f'{correct_type(function["return_type"])} '
+            else:
+                function_signature += "Variant "
         else:
             function_signature += "void "
 
-        function_signature += f'{escape_identifier(function["name"])}('
+        function_signature += f'{escape_identifier(function["name"])}'
 
-        # TODO: varargs
+        if vararg:
+            function_signature += "_internal"
+
+        function_signature += "("
+
+        function_arguments = []
         if "arguments" in function:
-            function_signature += make_function_parameters(function["arguments"], include_default=True)
+            function_arguments = function["arguments"]
+
+        if not vararg:
+            function_signature += make_function_parameters(function_arguments, include_default=False)
+        else:
+            function_signature += "const Variant **args, GDNativeInt arg_count"
         function_signature += ");"
 
         header.append(function_signature)
+
+        if vararg:
+            # Add templated version.
+            method_signature = "\tpublic: template<class... Args> static "
+
+            if "return_type" in function:
+                method_signature += correct_type(function["return_type"])
+            else:
+                method_signature += "void"
+
+            if not method_signature.endswith("*"):
+                method_signature += " "
+
+            method_signature += f'{escape_identifier(function["name"])}'
+
+            method_arguments = []
+            if "arguments" in function:
+                method_arguments = function["arguments"]
+
+            method_signature += "("
+            method_signature += make_function_parameters(method_arguments, include_default=True, is_vararg=vararg)
+            method_signature += ")"
+
+            method_signature += " {"
+            header.append(method_signature)
+
+            args_array = f"\t\tstd::array<Variant, {len(method_arguments)} + sizeof...(Args)> variant_args {{ "
+            for argument in method_arguments:
+                if argument["type"] == "Variant":
+                    args_array += argument["name"]
+                else:
+                    args_array += f'Variant({argument["name"]})'
+                args_array += ", "
+
+            args_array += "Variant(args)... };"
+            header.append(args_array)
+            header.append(f"\t\tstd::array<const Variant *, {len(method_arguments)} + sizeof...(Args)> call_args;")
+            header.append("\t\tfor(size_t i = 0; i < variant_args.size(); i++) {")
+            header.append("\t\t\tcall_args[i] = &variant_args[i];")
+            header.append("\t\t}")
+
+            call_line = "\t\t"
+
+            if "return_type" in function and function["return_type"] != "void":
+                call_line += "return "
+
+            call_line += f'{escape_identifier(function["name"])}_internal(call_args.data(), variant_args.size());'
+            header.append(call_line)
+            header.append("\t}")
 
     header.append("};")
     header.append("")
@@ -1005,20 +1192,33 @@ def generate_utility_functions(api, output_dir):
     source.append("")
 
     for function in api["utility_functions"]:
+        vararg = "is_vararg" in function and function["is_vararg"]
+
         function_signature = ""
         if "return_type" in function:
-            function_signature += correct_type(function["return_type"])
+            if not vararg:
+                function_signature += f'{correct_type(function["return_type"])}'
+            else:
+                function_signature += "Variant"
         else:
             function_signature += "void"
 
         if not function_signature.endswith("*"):
             function_signature += " "
 
-        function_signature += f'UtilityFunctions::{escape_identifier(function["name"])}('
+        function_signature += f'UtilityFunctions::{escape_identifier(function["name"])}'
+        if vararg:
+            function_signature += "_internal"
+        function_signature += "("
 
-        # TODO: varargs
+        function_arguments = []
         if "arguments" in function:
-            function_signature += make_function_parameters(function["arguments"], include_default=False)
+            function_arguments = function["arguments"]
+
+        if not vararg:
+            function_signature += make_function_parameters(function_arguments, include_default=False)
+        else:
+            function_signature += "const Variant **args, GDNativeInt arg_count"
         function_signature += ") {"
 
         source.append(function_signature)
@@ -1028,36 +1228,46 @@ def generate_utility_functions(api, output_dir):
         source.append(
             f'\tstatic GDNativePtrUtilityFunction ___function = internal::interface->variant_get_ptr_utility_function("{function["name"]}", {function["hash"]});'
         )
-
-        function_call = "\t"
-        if "return_type" in function and function["return_type"] != "void":
+        has_return = "return_type" in function and function["return_type"] != "void"
+        if has_return:
             source.append(
                 f'\tCHECK_METHOD_BIND_RET(___function, {get_default_value_for_type(function["return_type"])});'
             )
-            function_call += "return "
-            if function["return_type"] == "Object":
-                function_call += "internal::_call_utility_ret_obj(___function"
-            else:
-                function_call += f'internal::_call_utility_ret<{correct_type(function["return_type"])}>(___function'
         else:
             source.append(f"\tCHECK_METHOD_BIND(___function);")
-            function_call += "internal::_call_utility_no_ret(___function"
 
-        if "arguments" in function:
-            function_call += ", "
-            arguments = []
-            for argument in function["arguments"]:
-                (encode, arg_name) = get_encoded_arg(
-                    argument["name"],
-                    argument["type"],
-                    argument["meta"] if "meta" in argument else None,
-                )
-                source += encode
-                arguments.append(arg_name)
-            function_call += ", ".join(arguments)
+        function_call = "\t"
+        if not vararg:
+            if has_return:
+                function_call += "return "
+                if function["return_type"] == "Object":
+                    function_call += "internal::_call_utility_ret_obj(___function"
+                else:
+                    function_call += f'internal::_call_utility_ret<{correct_type(function["return_type"])}>(___function'
+            else:
+                function_call += "internal::_call_utility_no_ret(___function"
+
+            if "arguments" in function:
+                function_call += ", "
+                arguments = []
+                for argument in function["arguments"]:
+                    (encode, arg_name) = get_encoded_arg(
+                        argument["name"],
+                        argument["type"],
+                        argument["meta"] if "meta" in argument else None,
+                    )
+                    source += encode
+                    arguments.append(arg_name)
+                function_call += ", ".join(arguments)
+        else:
+            source.append("\tVariant ret;")
+            function_call += "___function(&ret, (const GDNativeVariantPtr *)args, arg_count"
 
         function_call += ");"
         source.append(function_call)
+
+        if vararg and has_return:
+            source.append("\treturn ret;")
 
         source.append("}")
         source.append("")
@@ -1077,7 +1287,7 @@ def camel_to_snake(name):
     return name.replace("2_D", "2D").replace("3_D", "3D").lower()
 
 
-def make_function_parameters(parameters, include_default=False, for_builtin=False):
+def make_function_parameters(parameters, include_default=False, for_builtin=False, is_vararg=False):
     signature = []
 
     for par in parameters:
@@ -1090,6 +1300,9 @@ def make_function_parameters(parameters, include_default=False, for_builtin=Fals
                 parameter += f'({correct_type(par["type"])})'
             parameter += correct_default_value(par["default_value"], par["type"])
         signature.append(parameter)
+
+    if is_vararg:
+        signature.append("const Args&... args")
 
     return ", ".join(signature)
 

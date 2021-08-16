@@ -78,10 +78,13 @@ void MyScene::_ready() {
 
 	std::cout << "Read text: " << txt_str << std::endl;
 
-	UtilityFunctions::print("Test");
+	UtilityFunctions::prints("Test", "with", "multiple", "args");
+	int64_t max = UtilityFunctions::max(50, 60, 120, 30);
+	std::cout << "Max is " << max << std::endl;
 
 	Label *new_label = memnew(Label);
-	new_label->set_text("Hey!");
+	new_label->call("set_text", "Hey from call!");
+	// new_label->set_text("Hey!");
 	add_child(new_label);
 }
 

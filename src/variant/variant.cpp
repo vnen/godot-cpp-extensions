@@ -93,6 +93,10 @@ Variant::Variant(const Variant &other) {
 	internal::interface->variant_new_copy(ptr, other.ptr);
 }
 
+Variant::Variant(Variant &&other) {
+	std::swap(opaque, other.opaque);
+}
+
 Variant::Variant(bool v) {
 	GDNativeBool encoded;
 	PtrToArg<bool>::encode(v, &encoded);
@@ -457,6 +461,14 @@ Variant::operator PackedColorArray() const {
 	PackedColorArray result;
 	to_type_constructor[PACKED_COLOR_ARRAY](result.ptr, ptr);
 	return result;
+}
+
+Variant::operator const GDNativeVariantPtr() const {
+	return reinterpret_cast<const GDNativeVariantPtr>(const_cast<uint8_t(*)[GODOT_CPP_VARIANT_SIZE]>(&opaque));
+}
+
+Variant::operator GDNativeVariantPtr() {
+	return reinterpret_cast<const GDNativeVariantPtr>(&opaque);
 }
 
 Variant &Variant::operator=(const Variant &other) {

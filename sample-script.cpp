@@ -66,6 +66,11 @@ void MyScene::_bind_methods() {
 	}
 
 	ADD_SIGNAL(MethodInfo("my_signal", PropertyInfo(Variant::STRING, "name"), PropertyInfo(Variant::INT, "value")));
+
+	BIND_CONSTANT(CONSTANT_WITHOUT_ENUM);
+
+	BIND_ENUM_CONSTANT(FIRST_CONSTANT);
+	BIND_ENUM_CONSTANT(ANSWER_TO_EVERYTHING);
 }
 
 void MyScene::_ready() {

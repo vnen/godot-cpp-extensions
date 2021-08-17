@@ -55,6 +55,13 @@ private:
 	int prop = 0;
 
 public:
+	enum Constants {
+		FIRST_CONSTANT,
+		ANSWER_TO_EVERYTHING = 42,
+	};
+	enum {
+		CONSTANT_WITHOUT_ENUM = 23,
+	};
 	void _ready();
 	void on_button_down();
 	void on_button_up() const;
@@ -72,5 +79,7 @@ public:
 	MyScene() :
 			Node2D(godot::internal::empty_constructor()) {}
 };
+
+VARIANT_ENUM_CAST(MyScene, Constants);
 
 #endif // ! SAMPLE_SCRIPT_H

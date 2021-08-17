@@ -147,16 +147,26 @@ struct GetTypeInfo<const Variant &> {
 	}
 };
 
-#define MAKE_ENUM_TYPE_INFO(m_enum)                 \
-	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_enum)       \
-	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_enum const) \
-	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_enum &)     \
-	TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, const m_enum &)
+#define TEMPL_MAKE_ENUM_TYPE_INFO(m_class, m_enum, m_impl)                                                                                                           \
+	template <>                                                                                                                                                      \
+	struct GetTypeInfo<m_impl> {                                                                                                                                     \
+		static const Variant::Type VARIANT_TYPE = Variant::INT;                                                                                                      \
+		static const GDNativeExtensionClassMethodArgumentMetadata METADATA = GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE;                                       \
+		static inline GDNativePropertyInfo get_class_info() {                                                                                                        \
+			return PropertyInfo(GDNATIVE_VARIANT_TYPE_INT, "", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_ENUM, #m_class "." #m_enum); \
+		}                                                                                                                                                            \
+	};
+
+#define MAKE_ENUM_TYPE_INFO(m_class, m_enum)                          \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_class, m_enum, m_class::m_enum)       \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_class, m_enum, m_class::m_enum const) \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_class, m_enum, m_class::m_enum &)     \
+	TEMPL_MAKE_ENUM_TYPE_INFO(m_class, m_enum, const m_class::m_enum &)
 
 template <typename T>
-inline StringName __constant_get_enum_name(T param, const String &p_constant) {
+inline const char *__constant_get_enum_name(T param, const char *p_constant) {
 	if (GetTypeInfo<T>::VARIANT_TYPE == Variant::NIL) {
-		ERR_PRINT("Missing VARIANT_ENUM_CAST for constant's enum: " + p_constant);
+		ERR_PRINT(("Missing VARIANT_ENUM_CAST for constant's enum: " + String(p_constant)).utf8().get_data());
 	}
 	return GetTypeInfo<T>::get_class_info().class_name;
 }

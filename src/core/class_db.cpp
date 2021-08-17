@@ -159,6 +159,19 @@ void ClassDB::add_signal(const char *p_class, const MethodInfo &p_signal) {
 	base.signal_map[p_signal.name] = p_signal;
 }
 
+void ClassDB::bind_integer_constant(const char *p_class, const char *p_enum, const char *p_name, GDNativeInt p_constant) {
+	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(p_class);
+
+	ERR_FAIL_COND_MSG(type_it == classes.end(), "Class doesn't exist.");
+
+	ClassInfo &type = type_it->second;
+
+	ERR_FAIL_COND_MSG(type.constant_map.find(p_name) != type.constant_map.end(), "Constant already registered.");
+
+	type.constant_map[p_name] = std::pair<const char *, GDNativeInt>{ p_enum, p_constant };
+	type.constant_order.push_back(p_name);
+}
+
 void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 	for (const std::pair<const char *, ClassInfo> pair : classes) {
 		const ClassInfo &cl = pair.second;
@@ -234,6 +247,12 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 			}
 
 			internal::interface->classdb_register_extension_class_signal(internal::library, cl.name, pair.first, parameters.data(), parameters.size());
+		}
+
+		for (const char *constant : cl.constant_order) {
+			const std::pair<const char *, GDNativeInt> &def = cl.constant_map.find(constant)->second;
+
+			internal::interface->classdb_register_extension_class_integer_constant(internal::library, cl.name, def.first, constant, def.second);
 		}
 	}
 }

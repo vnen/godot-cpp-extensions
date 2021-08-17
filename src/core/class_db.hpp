@@ -85,6 +85,8 @@ public:
 		void (*object_instance)(GDExtensionClassInstancePtr p_instance, GDNativeObjectPtr p_object_instance);
 		std::unordered_map<const char *, PropertySetGet> property_setget;
 		std::list<PropertyInfo> property_list;
+		std::unordered_map<const char *, std::pair<const char *, GDNativeInt>> constant_map; // String in pair is enum name.
+		std::list<const char *> constant_order;
 		ClassInfo *parent_ptr = nullptr;
 	};
 
@@ -103,12 +105,19 @@ public:
 	static MethodBind *bind_vararg_method(uint32_t p_flags, const char *p_name, M p_method, const MethodInfo &p_info = MethodInfo(), const std::vector<Variant> &p_default_args = std::vector<Variant>{}, bool p_return_nil_is_variant = true);
 	static void add_property(const char *p_class, const PropertyInfo &p_pinfo, const char *p_setter, const char *p_getter, int p_index = -1);
 	static void add_signal(const char *p_class, const MethodInfo &p_signal);
+	static void bind_integer_constant(const char *p_class, const char *p_enum, const char *p_name, GDNativeInt p_constant);
 
 	static MethodBind *get_method(const char *p_class, const char *p_method);
 
 	static void initialize(GDNativeInitializationLevel p_level);
 	static void deinitialize(GDNativeInitializationLevel p_level);
 };
+
+#define BIND_CONSTANT(m_constant) \
+	ClassDB::bind_integer_constant(get_class_static(), "", #m_constant, m_constant);
+
+#define BIND_ENUM_CONSTANT(m_constant) \
+	ClassDB::bind_integer_constant(get_class_static(), __constant_get_enum_name(m_constant, #m_constant), #m_constant, m_constant);
 
 template <class T>
 void ClassDB::register_class(GDNativeInitializationLevel p_level) {

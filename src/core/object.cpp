@@ -32,8 +32,23 @@
 
 namespace godot {
 
-// void Object::initialize_class() {}
+MethodInfo::MethodInfo() :
+		flags(METHOD_FLAG_NORMAL) {}
 
-// void Object::_bind_methods() {}
+MethodInfo::MethodInfo(const char *p_name) :
+		name(p_name), flags(METHOD_FLAG_NORMAL) {}
+
+MethodInfo::MethodInfo(Variant::Type ret) :
+		flags(METHOD_FLAG_NORMAL) {
+	return_val.type = ret;
+}
+
+MethodInfo::MethodInfo(Variant::Type ret, const char *p_name) :
+		name(p_name), flags(METHOD_FLAG_NORMAL) {
+	return_val.type = ret;
+}
+
+MethodInfo::MethodInfo(const PropertyInfo &p_ret, const char *p_name) :
+		name(p_name), return_val(p_ret), flags(METHOD_FLAG_NORMAL) {}
 
 } // namespace godot

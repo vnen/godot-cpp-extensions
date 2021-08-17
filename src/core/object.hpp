@@ -40,6 +40,8 @@
 
 #include <godot-headers/gdnative_interface.h>
 
+#include <vector>
+
 #define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, m_setter, m_getter)
 
 namespace godot {
@@ -52,7 +54,7 @@ struct PropertyInfo {
 	const char *hint_string = nullptr;
 	uint32_t usage = 7;
 
-	operator GDNativePropertyInfo() {
+	operator GDNativePropertyInfo() const {
 		GDNativePropertyInfo info;
 		info.type = type;
 		info.name = name;
@@ -81,6 +83,53 @@ struct PropertyInfo {
 	PropertyInfo(GDNativeVariantType p_type, const char *p_name, PropertyHint p_hint = PROPERTY_HINT_NONE, const char *p_hint_string = "", uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const char *p_class_name = "") :
 			PropertyInfo((Variant::Type)p_type, p_name, p_hint, p_hint_string, p_usage, p_class_name) {}
 };
+
+struct MethodInfo {
+	const char *name;
+	PropertyInfo return_val;
+	uint32_t flags;
+	int id = 0;
+	std::vector<PropertyInfo> arguments;
+	std::vector<Variant> default_arguments;
+
+	inline bool operator==(const MethodInfo &p_method) const { return id == p_method.id; }
+	inline bool operator<(const MethodInfo &p_method) const { return id == p_method.id ? (name < p_method.name) : (id < p_method.id); }
+
+	operator Dictionary() const;
+
+	static MethodInfo from_dict(const Dictionary &p_dict);
+
+	MethodInfo();
+	MethodInfo(const char *p_name);
+	template <class... Args>
+	MethodInfo(const char *p_name, const Args &...args);
+	MethodInfo(Variant::Type ret);
+	MethodInfo(Variant::Type ret, const char *p_name);
+	template <class... Args>
+	MethodInfo(Variant::Type ret, const char *p_name, const Args &...args);
+	MethodInfo(const PropertyInfo &p_ret, const char *p_name);
+	template <class... Args>
+	MethodInfo(const PropertyInfo &p_ret, const char *p_name, const Args &...);
+};
+
+template <class... Args>
+MethodInfo::MethodInfo(const char *p_name, const Args &...args) :
+		name(p_name), flags(METHOD_FLAG_NORMAL) {
+	arguments = { args... };
+}
+
+template <class... Args>
+MethodInfo::MethodInfo(Variant::Type ret, const char *p_name, const Args &...args) :
+		name(p_name), flags(METHOD_FLAG_NORMAL) {
+	return_val.type = ret;
+	arguments = { args... };
+}
+
+template <class... Args>
+MethodInfo::MethodInfo(const PropertyInfo &p_ret, const char *p_name, const Args &...args) :
+		name(p_name), return_val(p_ret), flags(METHOD_FLAG_NORMAL) {
+	arguments = { args... };
+}
 
 template <class T>
 T *Object::cast_to(Object *p_object) {

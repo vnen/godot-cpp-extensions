@@ -67,6 +67,8 @@ public:
 
 	int method_with_many_params(int par1, int par2, int par3, int par4);
 
+	godot::Variant varargs_func(const godot::Variant **args, GDNativeInt arg_count, GDNativeCallError &error);
+
 	MyScene() :
 			Node2D(godot::internal::empty_constructor()) {}
 };

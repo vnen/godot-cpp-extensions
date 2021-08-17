@@ -57,6 +57,13 @@ void MyScene::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "prop"), "set_prop", "get_prop");
 
 	ClassDB::bind_method(D_METHOD("method_with_many_params", "par1", "par2", "par3", "par4"), &MyScene::method_with_many_params);
+
+	{
+		MethodInfo mi;
+		mi.arguments.push_back(PropertyInfo(Variant::STRING, "some_argument"));
+		mi.name = "varargs_func";
+		ClassDB::bind_vararg_method(METHOD_FLAG_NORMAL, "varargs_func", &MyScene::varargs_func, mi, std::vector<Variant>{}, false);
+	}
 }
 
 void MyScene::_ready() {
@@ -115,6 +122,12 @@ int MyScene::get_prop() {
 
 void MyScene::set_prop(int value) {
 	prop = value;
+}
+
+Variant MyScene::varargs_func(const Variant **args, GDNativeInt arg_count, GDNativeCallError &error) {
+	UtilityFunctions::print("Varargs called with ", arg_count, " arguments");
+	// error.error = GDNATIVE_CALL_OK;
+	return Variant();
 }
 
 int MyScene::method_with_many_params(int par1, int par2, int par3, int par4) {

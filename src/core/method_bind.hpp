@@ -51,7 +51,6 @@ class MethodBind {
 	const char *name = nullptr;
 	const char *instance_class = nullptr;
 	int argument_count = 0;
-	int default_argument_count = 0;
 	uint32_t hint_flags = METHOD_FLAG_NORMAL;
 
 	bool _is_const = false;
@@ -72,7 +71,7 @@ protected:
 public:
 	const char *get_name() const;
 	void set_name(const char *p_name);
-	_FORCE_INLINE_ int get_default_argument_count() const { return default_argument_count; }
+	_FORCE_INLINE_ int get_default_argument_count() const { return default_arguments.size(); }
 	_FORCE_INLINE_ const std::vector<Variant> &get_default_arguments() const { return default_arguments; }
 	_FORCE_INLINE_ Variant has_default_argument(int p_arg) const {
 		int idx = p_arg - (argument_count - default_arguments.size());
@@ -100,6 +99,7 @@ public:
 	_FORCE_INLINE_ bool has_return() const { return _has_return; }
 	void set_argument_names(const std::vector<std::string> &p_names);
 	std::vector<std::string> get_argument_names() const;
+	void set_default_arguments(const std::vector<Variant> &p_default_arguments) { default_arguments = p_default_arguments; }
 
 	_FORCE_INLINE_ GDNativeVariantType get_argument_type(int p_argument) const {
 		ERR_FAIL_COND_V(p_argument < -1 || p_argument > argument_count, GDNATIVE_VARIANT_TYPE_NIL);
@@ -122,6 +122,82 @@ public:
 
 	virtual ~MethodBind();
 };
+
+template <class T>
+class MethodBindVarArg : public MethodBind {
+public:
+	typedef Variant (T::*NativeCall)(const Variant **, GDNativeInt, GDNativeCallError &);
+
+protected:
+	NativeCall call_method = nullptr;
+	MethodInfo arguments;
+
+public:
+	virtual GDNativePropertyInfo gen_argument_type_info(int p_arg) const {
+		if (p_arg < 0) {
+			return arguments.return_val;
+		} else if (p_arg < arguments.arguments.size()) {
+			return arguments.arguments[p_arg];
+		} else {
+			return PropertyInfo(Variant::NIL, "vararg", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT);
+		}
+	}
+
+	virtual GDNativeVariantType gen_argument_type(int p_arg) const {
+		return static_cast<GDNativeVariantType>(gen_argument_type_info(p_arg).type);
+	}
+
+	virtual GDNativeExtensionClassMethodArgumentMetadata get_argument_metadata(int) const {
+		return GDNATIVE_EXTENSION_METHOD_ARGUMENT_METADATA_NONE;
+	}
+
+	virtual Variant call(GDExtensionClassInstancePtr p_instance, const GDNativeVariantPtr *p_args, const GDNativeInt p_argument_count, GDNativeCallError &r_error) const {
+		T *instance = static_cast<T *>(p_instance);
+		return (instance->*call_method)((const Variant **)p_args, p_argument_count, r_error);
+	}
+
+	void set_method_info(const MethodInfo &p_info, bool p_return_nil_is_variant) {
+		set_argument_count(p_info.arguments.size());
+		if (p_info.arguments.size()) {
+			std::vector<std::string> names;
+			names.reserve(p_info.arguments.size());
+			for (int i = 0; i < p_info.arguments.size(); i++) {
+				names.push_back(p_info.arguments[i].name);
+			}
+
+			set_argument_names(names);
+		}
+
+		arguments = p_info;
+
+		if (p_return_nil_is_variant) {
+			arguments.return_val.usage |= PROPERTY_USAGE_NIL_IS_VARIANT;
+		}
+		generate_argument_types(p_info.arguments.size());
+	}
+
+	virtual void ptrcall(GDExtensionClassInstancePtr p_instance, const GDNativeTypePtr *p_args, GDNativeTypePtr r_return) const {
+		ERR_FAIL(); // Can't call.
+	}
+
+	void set_method(NativeCall p_method) { call_method = p_method; }
+	virtual bool is_const() const { return false; }
+
+	virtual bool is_vararg() const { return true; }
+
+	MethodBindVarArg() {
+		set_return(true);
+	}
+};
+
+template <class T>
+MethodBind *create_vararg_method_bind(Variant (T::*p_method)(const Variant **, GDNativeInt, GDNativeCallError &), const MethodInfo &p_info, bool p_return_nil_is_variant) {
+	MethodBindVarArg<T> *a = memnew((MethodBindVarArg<T>));
+	a->set_method(p_method);
+	a->set_method_info(p_info, p_return_nil_is_variant);
+	a->set_instance_class(T::get_class_static());
+	return a;
+}
 
 #ifndef TYPED_METHOD_BIND
 class ___UnexistingClass;

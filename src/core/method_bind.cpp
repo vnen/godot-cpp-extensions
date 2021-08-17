@@ -63,7 +63,11 @@ std::vector<std::string> MethodBind::get_argument_names() const {
 void MethodBind::generate_argument_types(int p_count) {
 	set_argument_count(p_count);
 
-	argument_types = new GDNativeVariantType[p_count + 1];
+	if (argument_types != nullptr) {
+		memdelete_arr(argument_types);
+	}
+
+	argument_types = memnew_arr(GDNativeVariantType, p_count + 1);
 
 	// -1 means return type.
 	for (int i = -1; i < p_count; i++) {
@@ -109,7 +113,7 @@ void MethodBind::bind_ptrcall(void *p_method_userdata, GDExtensionClassInstanceP
 
 MethodBind::~MethodBind() {
 	if (argument_types) {
-		delete[] argument_types;
+		memdelete_arr(argument_types);
 	}
 }
 

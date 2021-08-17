@@ -98,6 +98,8 @@ public:
 
 	template <class N, class M>
 	static MethodBind *bind_method(N p_method_name, M p_method);
+	template <class M>
+	static MethodBind *bind_vararg_method(uint32_t p_flags, const char *p_name, M p_method, const MethodInfo &p_info = MethodInfo(), const std::vector<Variant> &p_default_args = std::vector<Variant>{}, bool p_return_nil_is_variant = true);
 	static void add_property(const char *p_class, const PropertyInfo &p_pinfo, const char *p_setter, const char *p_getter, int p_index = -1);
 
 	static MethodBind *get_method(const char *p_class, const char *p_method);
@@ -127,6 +129,35 @@ MethodBind *ClassDB::bind_method(N p_method_name, M p_method) {
 	MethodBind *bind = create_method_bind(p_method);
 
 	return bind_methodfi(0, bind, p_method_name, nullptr, 0);
+}
+
+template <class M>
+MethodBind *ClassDB::bind_vararg_method(uint32_t p_flags, const char *p_name, M p_method, const MethodInfo &p_info, const std::vector<Variant> &p_default_args, bool p_return_nil_is_variant) {
+	MethodBind *bind = create_vararg_method_bind(p_method, p_info, p_return_nil_is_variant);
+	ERR_FAIL_COND_V(!bind, nullptr);
+
+	bind->set_name(p_name);
+	bind->set_default_arguments(p_default_args);
+
+	const char *instance_type = bind->get_instance_class();
+
+	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(instance_type);
+	if (type_it == classes.end()) {
+		memdelete(bind);
+		ERR_FAIL_V_MSG(nullptr, "Class doesn't exist.");
+	}
+
+	ClassInfo &type = type_it->second;
+
+	if (type.method_map.find(p_name) != type.method_map.end()) {
+		memdelete(bind);
+		ERR_FAIL_V_MSG(nullptr, "Binding duplicate method.");
+	}
+
+	type.method_map[p_name] = bind;
+	type.method_order.push_back(bind);
+
+	return bind;
 }
 } // namespace godot
 

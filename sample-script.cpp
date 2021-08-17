@@ -64,6 +64,8 @@ void MyScene::_bind_methods() {
 		mi.name = "varargs_func";
 		ClassDB::bind_vararg_method(METHOD_FLAG_NORMAL, "varargs_func", &MyScene::varargs_func, mi, std::vector<Variant>{}, false);
 	}
+
+	ADD_SIGNAL(MethodInfo("my_signal", PropertyInfo(Variant::STRING, "name"), PropertyInfo(Variant::INT, "value")));
 }
 
 void MyScene::_ready() {
@@ -125,8 +127,9 @@ void MyScene::set_prop(int value) {
 }
 
 Variant MyScene::varargs_func(const Variant **args, GDNativeInt arg_count, GDNativeCallError &error) {
-	UtilityFunctions::print("Varargs called with ", arg_count, " arguments");
+	UtilityFunctions::print("Varargs called with ", String::num(arg_count), " arguments");
 	// error.error = GDNATIVE_CALL_OK;
+	emit_signal("my_signal", "some_name", arg_count);
 	return Variant();
 }
 

@@ -144,6 +144,21 @@ MethodBind *ClassDB::bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const M
 	return p_bind;
 }
 
+void ClassDB::add_signal(const char *p_class, const MethodInfo &p_signal) {
+	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(p_class);
+
+	ERR_FAIL_COND_MSG(type_it == classes.end(), "Class doesn't exist.");
+
+	ClassInfo &base = type_it->second;
+	ClassInfo *check = &base;
+	while (check) {
+		ERR_FAIL_COND_MSG(check->signal_map.find(p_signal.name) != check->signal_map.end(), String("Class '" + String(p_class) + "' already has signal '" + String(p_signal.name) + "'.").utf8().get_data());
+		check = check->parent_ptr;
+	}
+
+	base.signal_map[p_signal.name] = p_signal;
+}
+
 void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 	for (const std::pair<const char *, ClassInfo> pair : classes) {
 		const ClassInfo &cl = pair.second;
@@ -186,7 +201,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 			internal::interface->classdb_register_extension_class_method(internal::library, cl.name, &method_info);
 		}
 
-		for (PropertyInfo property : cl.property_list) {
+		for (const PropertyInfo &property : cl.property_list) {
 			GDNativePropertyInfo info = {
 				(uint32_t)property.type, //uint32_t type;
 				property.name, //const char *name;
@@ -199,6 +214,26 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 			const PropertySetGet &setget = cl.property_setget.find(property.name)->second;
 
 			internal::interface->classdb_register_extension_class_property(internal::library, cl.name, &info, setget.setter, setget.getter);
+		}
+
+		for (const std::pair<const char *, MethodInfo> pair : cl.signal_map) {
+			const MethodInfo &signal = pair.second;
+
+			std::vector<GDNativePropertyInfo> parameters;
+			parameters.reserve(signal.arguments.size());
+
+			for (const PropertyInfo &par : signal.arguments) {
+				parameters.push_back(GDNativePropertyInfo{
+						static_cast<uint32_t>(par.type), // uint32_t type;
+						par.name, // const char *name;
+						par.class_name, // const char *class_name;
+						par.hint, // uint32_t hint;
+						par.hint_string, // const char *hint_string;
+						par.usage, // uint32_t usage;
+				});
+			}
+
+			internal::interface->classdb_register_extension_class_signal(internal::library, cl.name, pair.first, parameters.data(), parameters.size());
 		}
 	}
 }

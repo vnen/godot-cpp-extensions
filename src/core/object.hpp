@@ -42,6 +42,7 @@
 
 #include <vector>
 
+#define ADD_SIGNAL(m_signal) ClassDB::add_signal(get_class_static(), m_signal)
 #define ADD_PROPERTY(m_property, m_setter, m_getter) ClassDB::add_property(get_class_static(), m_property, m_setter, m_getter)
 
 namespace godot {

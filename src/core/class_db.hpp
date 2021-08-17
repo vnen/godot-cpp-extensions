@@ -78,6 +78,7 @@ public:
 		const char *parent_name = nullptr;
 		GDNativeInitializationLevel level = GDNATIVE_INITIALIZATION_SCENE;
 		std::unordered_map<const char *, MethodBind *> method_map;
+		std::unordered_map<const char *, MethodInfo> signal_map;
 		std::list<MethodBind *> method_order;
 		GDExtensionClassInstancePtr (*constructor)(void *data);
 		void (*destructor)(void *data, GDExtensionClassInstancePtr ptr);
@@ -101,6 +102,7 @@ public:
 	template <class M>
 	static MethodBind *bind_vararg_method(uint32_t p_flags, const char *p_name, M p_method, const MethodInfo &p_info = MethodInfo(), const std::vector<Variant> &p_default_args = std::vector<Variant>{}, bool p_return_nil_is_variant = true);
 	static void add_property(const char *p_class, const PropertyInfo &p_pinfo, const char *p_setter, const char *p_getter, int p_index = -1);
+	static void add_signal(const char *p_class, const MethodInfo &p_signal);
 
 	static MethodBind *get_method(const char *p_class, const char *p_method);
 

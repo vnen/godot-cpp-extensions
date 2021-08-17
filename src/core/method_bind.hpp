@@ -51,7 +51,7 @@ class MethodBind {
 	const char *name = nullptr;
 	const char *instance_class = nullptr;
 	int argument_count = 0;
-	uint32_t hint_flags = METHOD_FLAG_NORMAL;
+	uint32_t hint_flags = METHOD_FLAGS_DEFAULT;
 
 	bool _is_const = false;
 	bool _has_return = false;
@@ -97,6 +97,8 @@ public:
 	_FORCE_INLINE_ int get_argument_count() const { return argument_count; };
 	_FORCE_INLINE_ bool is_const() const { return _is_const; }
 	_FORCE_INLINE_ bool has_return() const { return _has_return; }
+	_FORCE_INLINE_ uint32_t get_hint_flags() const { return hint_flags; }
+	_FORCE_INLINE_ void set_hint_flags(uint32_t p_hint_flags) { hint_flags = p_hint_flags; }
 	void set_argument_names(const std::vector<std::string> &p_names);
 	std::vector<std::string> get_argument_names() const;
 	void set_default_arguments(const std::vector<Variant> &p_default_arguments) { default_arguments = p_default_arguments; }

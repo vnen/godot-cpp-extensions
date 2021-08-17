@@ -129,6 +129,8 @@ MethodBind *ClassDB::bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const M
 		ERR_FAIL_V_MSG(nullptr, "Method definition has more arguments than the actual method.");
 	}
 
+	p_bind->set_hint_flags(p_flags);
+
 	std::vector<std::string> args;
 	args.resize(method_name.args.size());
 	size_t arg_index = 0;
@@ -208,7 +210,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 				MethodBind::bind_get_argument_type, //(GDNativeExtensionClassMethodGetArgumentType) get_argument_type_func;
 				MethodBind::bind_get_argument_info, //GDNativeExtensionClassMethodGetArgumentInfo get_argument_info_func; /* name and hint information for the argument can be omitted in release builds. Class name should always be present if it applies. */
 				MethodBind::bind_get_argument_metadata, //GDNativeExtensionClassMethodGetArgumentMetadata get_argument_metadata_func;
-				0, //uint32_t default_argument_count;
+				method->get_hint_flags(), //uint32_t default_argument_count;
 				nullptr, //GDNativeVariantPtr *default_arguments;
 			};
 			internal::interface->classdb_register_extension_class_method(internal::library, cl.name, &method_info);

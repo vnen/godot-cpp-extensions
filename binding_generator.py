@@ -286,6 +286,9 @@ def generate_builtin_class_header(builtin_api, size, used_classes, fully_used_cl
                 result.append("\ttemplate<class... Args>")
 
             method_signature = "\t"
+            if "is_static" in method and method["is_static"]:
+                method_signature += "static "
+
             if "return_type" in method:
                 method_signature += f'{correct_type(method["return_type"])} '
             else:
@@ -540,7 +543,12 @@ def generate_builtin_class_source(builtin_api, size, used_classes, fully_used_cl
                 method_call += f'return internal::_call_builtin_method_ptr_ret<{correct_type(method["return_type"])}>('
             else:
                 method_call += f"internal::_call_builtin_method_ptr_no_ret("
-            method_call += f'_method_bindings.method_{method["name"]}, (GDNativeTypePtr)&opaque'
+            method_call += f'_method_bindings.method_{method["name"]}, '
+            if "is_static" in method and method["is_static"]:
+                method_call += "nullptr"
+            else:
+                method_call += "(GDNativeTypePtr)&opaque"
+
             if "arguments" in method:
                 arguments = []
                 method_call += ", "

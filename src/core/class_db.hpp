@@ -77,21 +77,22 @@ public:
 		const char *name = nullptr;
 		const char *parent_name = nullptr;
 		GDNativeInitializationLevel level = GDNATIVE_INITIALIZATION_SCENE;
-		std::unordered_map<const char *, MethodBind *> method_map;
-		std::unordered_map<const char *, MethodInfo> signal_map;
+		std::unordered_map<std::string, MethodBind *> method_map;
+		std::unordered_map<std::string, MethodInfo> signal_map;
 		std::list<MethodBind *> method_order;
 		GDExtensionClassInstancePtr (*constructor)(void *data);
+		std::unordered_map<std::string, GDNativeExtensionClassCallVirtual> virtual_methods;
 		void (*destructor)(void *data, GDExtensionClassInstancePtr ptr);
 		void (*object_instance)(GDExtensionClassInstancePtr p_instance, GDNativeObjectPtr p_object_instance);
-		std::unordered_map<const char *, PropertySetGet> property_setget;
+		std::unordered_map<std::string, PropertySetGet> property_setget;
 		std::list<PropertyInfo> property_list;
-		std::unordered_map<const char *, std::pair<const char *, GDNativeInt>> constant_map; // String in pair is enum name.
-		std::list<const char *> constant_order;
+		std::unordered_map<std::string, std::pair<std::string, GDNativeInt>> constant_map; // String in pair is enum name.
+		std::list<std::string> constant_order;
 		ClassInfo *parent_ptr = nullptr;
 	};
 
 private:
-	static std::unordered_map<const char *, ClassInfo> classes;
+	static std::unordered_map<std::string, ClassInfo> classes;
 
 	static MethodBind *bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const MethodDefinition &method_name, const void **p_defs, int p_defcount);
 
@@ -106,8 +107,11 @@ public:
 	static void add_property(const char *p_class, const PropertyInfo &p_pinfo, const char *p_setter, const char *p_getter, int p_index = -1);
 	static void add_signal(const char *p_class, const MethodInfo &p_signal);
 	static void bind_integer_constant(const char *p_class, const char *p_enum, const char *p_name, GDNativeInt p_constant);
+	static void bind_virtual_method(const char *p_class, const char *p_method, GDNativeExtensionClassCallVirtual p_call);
 
 	static MethodBind *get_method(const char *p_class, const char *p_method);
+
+	static GDNativeExtensionClassCallVirtual get_virtual_func(void *p_userdata, const char *p_name);
 
 	static void initialize(GDNativeInitializationLevel p_level);
 	static void deinitialize(GDNativeInitializationLevel p_level);
@@ -118,6 +122,14 @@ public:
 
 #define BIND_ENUM_CONSTANT(m_constant) \
 	ClassDB::bind_integer_constant(get_class_static(), __constant_get_enum_name(m_constant, #m_constant), #m_constant, m_constant);
+
+#define BIND_VIRTUAL_METHOD(m_method)                                                                                             \
+	{                                                                                                                             \
+		auto ___call##m_method = [](GDNativeObjectPtr p_instance, const GDNativeTypePtr *p_args, GDNativeTypePtr p_ret) -> void { \
+			call_with_ptr_args(reinterpret_cast<SelfType *>(p_instance), &SelfType::m_method, p_args, p_ret);                     \
+		};                                                                                                                        \
+		ClassDB::bind_virtual_method(get_class_static(), #m_method, ___call##m_method);                                           \
+	}
 
 template <class T>
 void ClassDB::register_class(GDNativeInitializationLevel p_level) {
@@ -152,7 +164,7 @@ MethodBind *ClassDB::bind_vararg_method(uint32_t p_flags, const char *p_name, M 
 
 	const char *instance_type = bind->get_instance_class();
 
-	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(instance_type);
+	std::unordered_map<std::string, ClassInfo>::iterator type_it = classes.find(instance_type);
 	if (type_it == classes.end()) {
 		memdelete(bind);
 		ERR_FAIL_V_MSG(nullptr, "Class doesn't exist.");

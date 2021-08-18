@@ -141,3 +141,14 @@ Variant MyScene::varargs_func(const Variant **args, GDNativeInt arg_count, GDNat
 int MyScene::method_with_many_params(int par1, int par2, int par3, int par4) {
 	return par4;
 }
+
+/// MyControl
+
+void MyControl::_bind_methods() {
+	BIND_VIRTUAL_METHOD(_has_point);
+}
+
+bool MyControl::_has_point(const Vector2 &point) const {
+	UtilityFunctions::prints("Do we have point?", point);
+	return false;
+}

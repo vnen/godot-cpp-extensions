@@ -82,4 +82,14 @@ public:
 
 VARIANT_ENUM_CAST(MyScene, Constants);
 
+class MyControl : public godot::Control {
+	GDCLASS(MyControl, Control);
+
+protected:
+	static void _bind_methods();
+
+public:
+	bool _has_point(const godot::Vector2 &point) const;
+};
+
 #endif // ! SAMPLE_SCRIPT_H

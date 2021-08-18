@@ -173,17 +173,17 @@ void call_with_ptr_args(T *p_instance, void (T::*p_method)(P...), const GDNative
 }
 
 template <class T, class... P>
-void call_with_ptr_argsc(T *p_instance, void (T::*p_method)(P...) const, const GDNativeTypePtr *p_args) {
+void call_with_ptr_args(T *p_instance, void (T::*p_method)(P...) const, const GDNativeTypePtr *p_args) {
 	call_with_ptr_argsc_helper<T, P...>(p_instance, p_method, p_args, BuildIndexSequence<sizeof...(P)>{});
 }
 
 template <class T, class R, class... P>
-void call_with_ptr_args_ret(T *p_instance, R (T::*p_method)(P...), const GDNativeTypePtr *p_args, void *r_ret) {
+void call_with_ptr_args(T *p_instance, R (T::*p_method)(P...), const GDNativeTypePtr *p_args, void *r_ret) {
 	call_with_ptr_args_ret_helper<T, R, P...>(p_instance, p_method, p_args, r_ret, BuildIndexSequence<sizeof...(P)>{});
 }
 
 template <class T, class R, class... P>
-void call_with_ptr_args_retc(T *p_instance, R (T::*p_method)(P...) const, const GDNativeTypePtr *p_args, void *r_ret) {
+void call_with_ptr_args(T *p_instance, R (T::*p_method)(P...) const, const GDNativeTypePtr *p_args, void *r_ret) {
 	call_with_ptr_args_retc_helper<T, R, P...>(p_instance, p_method, p_args, r_ret, BuildIndexSequence<sizeof...(P)>{});
 }
 

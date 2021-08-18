@@ -39,7 +39,7 @@
 
 namespace godot {
 
-std::unordered_map<const char *, ClassDB::ClassInfo> ClassDB::classes;
+std::unordered_map<std::string, ClassDB::ClassInfo> ClassDB::classes;
 
 MethodDefinition D_METHOD(const char *p_name) {
 	return MethodDefinition(p_name);
@@ -95,7 +95,7 @@ MethodBind *ClassDB::get_method(const char *p_class, const char *p_method) {
 
 	ClassInfo *type = &classes[p_class];
 	while (type) {
-		std::unordered_map<const char *, MethodBind *>::iterator method = type->method_map.find(p_method);
+		std::unordered_map<std::string, MethodBind *>::iterator method = type->method_map.find(p_method);
 		if (method != type->method_map.end()) {
 			return method->second;
 		}
@@ -109,7 +109,7 @@ MethodBind *ClassDB::get_method(const char *p_class, const char *p_method) {
 MethodBind *ClassDB::bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const MethodDefinition &method_name, const void **p_defs, int p_defcount) {
 	const char *instance_type = p_bind->get_instance_class();
 
-	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(instance_type);
+	std::unordered_map<std::string, ClassInfo>::iterator type_it = classes.find(instance_type);
 	if (type_it == classes.end()) {
 		memdelete(p_bind);
 		ERR_FAIL_V_MSG(nullptr, "Class doesn't exist.");
@@ -120,6 +120,11 @@ MethodBind *ClassDB::bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const M
 	if (type.method_map.find(method_name.name) != type.method_map.end()) {
 		memdelete(p_bind);
 		ERR_FAIL_V_MSG(nullptr, "Binding duplicate method.");
+	}
+
+	if (type.virtual_methods.find(method_name.name) != type.virtual_methods.end()) {
+		memdelete(p_bind);
+		ERR_FAIL_V_MSG(nullptr, "Method already bound as virtual.");
 	}
 
 	p_bind->set_name(method_name.name);
@@ -147,7 +152,7 @@ MethodBind *ClassDB::bind_methodfi(uint32_t p_flags, MethodBind *p_bind, const M
 }
 
 void ClassDB::add_signal(const char *p_class, const MethodInfo &p_signal) {
-	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(p_class);
+	std::unordered_map<std::string, ClassInfo>::iterator type_it = classes.find(p_class);
 
 	ERR_FAIL_COND_MSG(type_it == classes.end(), "Class doesn't exist.");
 
@@ -162,7 +167,7 @@ void ClassDB::add_signal(const char *p_class, const MethodInfo &p_signal) {
 }
 
 void ClassDB::bind_integer_constant(const char *p_class, const char *p_enum, const char *p_name, GDNativeInt p_constant) {
-	std::unordered_map<const char *, ClassInfo>::iterator type_it = classes.find(p_class);
+	std::unordered_map<std::string, ClassInfo>::iterator type_it = classes.find(p_class);
 
 	ERR_FAIL_COND_MSG(type_it == classes.end(), "Class doesn't exist.");
 
@@ -170,12 +175,41 @@ void ClassDB::bind_integer_constant(const char *p_class, const char *p_enum, con
 
 	ERR_FAIL_COND_MSG(type.constant_map.find(p_name) != type.constant_map.end(), "Constant already registered.");
 
-	type.constant_map[p_name] = std::pair<const char *, GDNativeInt>{ p_enum, p_constant };
+	type.constant_map[p_name] = std::pair<std::string, GDNativeInt>{ p_enum, p_constant };
 	type.constant_order.push_back(p_name);
 }
 
+GDNativeExtensionClassCallVirtual ClassDB::get_virtual_func(void *p_userdata, const char *p_name) {
+	const char *class_name = (const char *)p_userdata;
+
+	std::unordered_map<std::string, ClassInfo>::iterator type_it = classes.find(class_name);
+	ERR_FAIL_COND_V_MSG(type_it == classes.end(), nullptr, "Class doesn't exist.");
+
+	ClassInfo &type = type_it->second;
+
+	std::unordered_map<std::string, GDNativeExtensionClassCallVirtual>::iterator method_it = type.virtual_methods.find(p_name);
+
+	if (method_it == type.virtual_methods.end()) {
+		return nullptr;
+	}
+
+	return method_it->second;
+}
+
+void ClassDB::bind_virtual_method(const char *p_class, const char *p_method, GDNativeExtensionClassCallVirtual p_call) {
+	std::unordered_map<std::string, ClassInfo>::iterator type_it = classes.find(p_class);
+	ERR_FAIL_COND_MSG(type_it == classes.end(), "Class doesn't exist.");
+
+	ClassInfo &type = type_it->second;
+
+	ERR_FAIL_COND_MSG(type.method_map.find(p_method) != type.method_map.end(), "Method already registered as non-virtual.");
+	ERR_FAIL_COND_MSG(type.virtual_methods.find(p_method) != type.virtual_methods.end(), "Virtual method already registered.");
+
+	type.virtual_methods[p_method] = p_call;
+}
+
 void ClassDB::initialize(GDNativeInitializationLevel p_level) {
-	for (const std::pair<const char *, ClassInfo> pair : classes) {
+	for (const std::pair<std::string, ClassInfo> pair : classes) {
 		const ClassInfo &cl = pair.second;
 		if (cl.level != p_level) {
 			continue;
@@ -193,7 +227,8 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 			cl.constructor, // GDNativeExtensionClassCreateInstance create_instance_func; /* this one is mandatory */
 			cl.destructor, // GDNativeExtensionClassFreeInstance free_instance_func; /* this one is mandatory */
 			cl.object_instance, // GDNativeExtensionClassObjectInstance object_instance_func; /* this one is mandatory */
-			nullptr, // GDNativeExtensionClassGetVirtual get_virtual_func;
+			&ClassDB::get_virtual_func, // GDNativeExtensionClassGetVirtual get_virtual_func;
+			(void *)cl.name, //void *class_userdata;
 		};
 
 		internal::interface->classdb_register_extension_class(internal::library, cl.name, cl.parent_name, &class_info);
@@ -231,7 +266,7 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 			internal::interface->classdb_register_extension_class_property(internal::library, cl.name, &info, setget.setter, setget.getter);
 		}
 
-		for (const std::pair<const char *, MethodInfo> pair : cl.signal_map) {
+		for (const std::pair<std::string, MethodInfo> pair : cl.signal_map) {
 			const MethodInfo &signal = pair.second;
 
 			std::vector<GDNativePropertyInfo> parameters;
@@ -248,19 +283,19 @@ void ClassDB::initialize(GDNativeInitializationLevel p_level) {
 				});
 			}
 
-			internal::interface->classdb_register_extension_class_signal(internal::library, cl.name, pair.first, parameters.data(), parameters.size());
+			internal::interface->classdb_register_extension_class_signal(internal::library, cl.name, pair.first.c_str(), parameters.data(), parameters.size());
 		}
 
-		for (const char *constant : cl.constant_order) {
-			const std::pair<const char *, GDNativeInt> &def = cl.constant_map.find(constant)->second;
+		for (std::string constant : cl.constant_order) {
+			const std::pair<std::string, GDNativeInt> &def = cl.constant_map.find(constant)->second;
 
-			internal::interface->classdb_register_extension_class_integer_constant(internal::library, cl.name, def.first, constant, def.second);
+			internal::interface->classdb_register_extension_class_integer_constant(internal::library, cl.name, def.first.c_str(), constant.c_str(), def.second);
 		}
 	}
 }
 
 void ClassDB::deinitialize(GDNativeInitializationLevel p_level) {
-	for (const std::pair<const char *, ClassInfo> pair : classes) {
+	for (const std::pair<std::string, ClassInfo> pair : classes) {
 		const ClassInfo &cl = pair.second;
 		if (cl.level != p_level) {
 			continue;

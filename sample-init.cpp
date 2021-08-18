@@ -38,6 +38,7 @@
 
 void register_classes() {
 	godot::ClassDB::register_class<MyScene>();
+	godot::ClassDB::register_class<MyControl>();
 }
 
 extern "C" {

@@ -63,6 +63,8 @@ public:
 private:                                                                                                           \
 	friend class ClassDB;                                                                                          \
                                                                                                                    \
+	using SelfType = m_class;                                                                                      \
+                                                                                                                   \
 protected:                                                                                                         \
 	static void (*_get_bind_methods())() {                                                                         \
 		return &m_class::_bind_methods;                                                                            \
